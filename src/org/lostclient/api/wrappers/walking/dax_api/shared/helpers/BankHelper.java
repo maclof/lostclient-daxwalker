@@ -33,9 +33,9 @@ public class BankHelper {
         }
     };
 
-//    private static final Filter<GameObject> BANK_OBJECT_FILTER = Filters.Objects.nameContains("bank", "Bank", "Exchange booth", "Open chest")
-//            .combine(Filters.Objects.actionsContains("Collect"), true)
-//            .combine(Filters.Objects.actionsContains("Bank"), true);
+//    private static final Predicate<GameObject> BANK_OBJECT_FILTER = GameObjectHelper.nameContainsPredicate("bank", "Bank", "Exchange booth", "Open chest")
+//            .and(GameObjectHelper.actionsContainsPredicate("Collect"), true)
+//            .and(GameObjectHelper.actionsContainsPredicate("Bank"), true);
 
     public static boolean isInBank(){
         return isInBank(Players.localPlayer());

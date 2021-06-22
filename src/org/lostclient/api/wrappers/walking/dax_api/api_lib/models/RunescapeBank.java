@@ -70,7 +70,7 @@ public enum RunescapeBank {
         this.position = new Tile(x,y,z);
     }
 
-    public Tile getPosition(){
+    public Tile getTile(){
         return this.position;
     }
 }

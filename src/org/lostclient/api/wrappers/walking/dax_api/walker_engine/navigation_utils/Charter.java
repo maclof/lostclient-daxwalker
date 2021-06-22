@@ -2,6 +2,7 @@ package org.lostclient.api.wrappers.walking.dax_api.walker_engine.navigation_uti
 
 import org.lostclient.api.wrappers.map.Area;
 import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.NPCHelper;
 import org.lostclient.api.wrappers.widgets.WidgetChild;
 import org.lostclient.api.wrappers.widgets.Widgets;
 import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.InterfaceHelper;
@@ -49,7 +50,7 @@ public class Charter implements Loggable {
 
     private static boolean openCharterMenu() {
         return Widgets.getWidget(CHARTER_INTERFACE_MASTER) != null ||
-                InteractionHelper.click(InteractionHelper.getNPC(Filters.NPCs.actionsEquals("Charter")), "Charter", () -> Interfaces.isInterfaceValid(CHARTER_INTERFACE_MASTER) ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE);
+                InteractionHelper.click(InteractionHelper.getNPC(NPCHelper.actionsEqualsPredicate("Charter")), "Charter", () -> InterfaceHelper.isInterfaceSubstantiated(CHARTER_INTERFACE_MASTER) ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE);
     }
 
     private static HashMap<LocationProperty, Location> getCharterLocations(){

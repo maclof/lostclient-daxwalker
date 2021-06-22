@@ -1,5 +1,8 @@
 package org.lostclient.api.wrappers.walking.dax_api.walker.utils.generator;
 
+import org.lostclient.api.Client;
+import org.lostclient.api.accessor.Players;
+import org.lostclient.api.wrappers.map.Tile;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.local_pathfinding.AStarNode;
 
 import java.io.BufferedWriter;
@@ -14,8 +17,8 @@ public class CollisionFileMaker {
             int[][] collisionData = PathFinding.getCollisionData();
             if(collisionData == null)
                 return;
-            int baseX = Game.getBaseX();
-            int baseY = Game.getBaseY();
+            int baseX = Client.getClient().getBaseX();
+            int baseY = Client.getClient().getBaseY();
             int baseZ = Players.localPlayer().getTile().getZ();
 
             File file = new File(Util.getWorkingDirectory().getAbsolutePath() + File.separator + baseX + "x" + baseY + "x" + baseZ + ".cdata");

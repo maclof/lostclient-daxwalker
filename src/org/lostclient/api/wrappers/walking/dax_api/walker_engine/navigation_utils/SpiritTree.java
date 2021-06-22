@@ -3,6 +3,7 @@ package org.lostclient.api.wrappers.walking.dax_api.walker_engine.navigation_uti
 import org.lostclient.api.accessor.Players;
 import org.lostclient.api.utilities.math.Calculations;
 import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.GameObjectHelper;
 import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.InterfaceHelper;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.WaitFor;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.interaction_handling.InteractionHelper;
@@ -47,8 +48,8 @@ public class SpiritTree {
     }
 
     public static boolean to(Location location){
-        if (!Interfaces.isInterfaceValid(SPIRIT_TREE_MASTER_INTERFACE)
-                && !InteractionHelper.click(InteractionHelper.getGameObject(Filters.Objects.actionsContains("Travel")), "Travel", () -> Interfaces.isInterfaceValid(SPIRIT_TREE_MASTER_INTERFACE) ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)) {
+        if (!InterfaceHelper.isInterfaceSubstantiated(SPIRIT_TREE_MASTER_INTERFACE)
+                && !InteractionHelper.click(InteractionHelper.getGameObject(GameObjectHelper.actionsContainsPredicate("Travel")), "Travel", () -> InterfaceHelper.isInterfaceSubstantiated(SPIRIT_TREE_MASTER_INTERFACE) ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)) {
             return false;
         }
 

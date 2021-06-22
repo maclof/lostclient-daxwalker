@@ -1,7 +1,10 @@
 package org.lostclient.api.wrappers.walking.dax_api.walker_engine.navigation_utils;
 
+import org.lostclient.api.accessor.Players;
+import org.lostclient.api.utilities.math.Calculations;
 import org.lostclient.api.wrappers.map.Tile;
 import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.InterfaceHelper;
+import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.NPCHelper;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.WaitFor;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.interaction_handling.InteractionHelper;
 import org.lostclient.api.wrappers.widgets.WidgetChild;
@@ -50,8 +53,8 @@ public class GnomeGlider {
     }
 
     public static boolean to(Location location) {
-        if (!Interfaces.isInterfaceValid(GNOME_GLIDER_MASTER_INTERFACE)
-                && !InteractionHelper.click(InteractionHelper.getNPC(Filters.NPCs.actionsContains("Glider")), "Glider", () -> Interfaces.isInterfaceValid(GNOME_GLIDER_MASTER_INTERFACE) ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)) {
+        if (!InterfaceHelper.isInterfaceSubstantiated(GNOME_GLIDER_MASTER_INTERFACE)
+                && !InteractionHelper.click(InteractionHelper.getNPC(NPCHelper.actionsContainsPredicate("Glider")), "Glider", () -> InterfaceHelper.isInterfaceSubstantiated(GNOME_GLIDER_MASTER_INTERFACE) ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)) {
             return false;
         }
 
@@ -64,7 +67,7 @@ public class GnomeGlider {
             return false;
         }
 
-        if (!option.click()){
+        if (!option.interact()){
             return false;
         }
 

@@ -1,5 +1,6 @@
 package org.lostclient.api.wrappers.walking.dax_api.walker;
 
+import org.lostclient.api.Client;
 import org.lostclient.api.wrappers.map.Tile;
 import org.lostclient.api.wrappers.walking.dax_api.walker.handlers.move_task.impl.DefaultObjectHandler;
 import org.lostclient.api.wrappers.walking.dax_api.walker.handlers.move_task.impl.DefaultWalkHandler;
@@ -51,7 +52,7 @@ public class DaxWalkerEngine implements DaxLogger {
 
     private boolean reachedEnd(List<Tile> path) {
         if (path == null || path.size() == 0) return true;
-        Tile tile = Game.getDestination();
+        Tile tile = new Tile(Client.getClient().getDestinationX(), Client.getClient().getDestinationY(), Client.getClient().getClient_plane());
         return tile != null && tile.equals(path.get(path.size() - 1));
     }
 
@@ -95,7 +96,7 @@ public class DaxWalkerEngine implements DaxLogger {
         }
 
         if (next != null) {
-            if (furthestInteractable.distanceDouble(next) >= 2D) {
+            if (furthestInteractable.distance(next) >= 2D) {
                 return new MoveTask(Situation.DISCONNECTED_PATH, furthestInteractable, next);
             }
 

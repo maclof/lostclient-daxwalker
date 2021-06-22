@@ -353,7 +353,7 @@ public enum Teleport {
 	ECTOPHIAL (
 		0, new Tile(3660, 3524, 0),
 		() -> inMembersWorld() && Inventory.contains((i) -> i.getName().contains("Ectophial")),
-		() -> ItemHelper.click(Filters.Items.nameContains("Ectophial"), "Empty")
+		() -> ItemHelper.click((i) -> i.getName().contains("Ectophial"), "Empty")
 	),
 
 	LLETYA (
@@ -391,7 +391,7 @@ public enum Teleport {
 	),
 	RADAS_BLESSING_MOUNT_KARUULM(
 		0, new Tile(1310, 3796, 0),
-		() -> inMembersWorld() && WearableItemTeleport.has(WearableItemTeleport.RADAS_BLESSING_FILTER.and(Filters.Items.nameContains("3","4"))),
+		() -> inMembersWorld() && WearableItemTeleport.has(WearableItemTeleport.RADAS_BLESSING_FILTER.and((i) -> StringHelper.nameContains(i.getName(), "3", "4"))),
 		() -> WearableItemTeleport.teleport(WearableItemTeleport.RADAS_BLESSING_FILTER, "Mount.*")
 	),
 

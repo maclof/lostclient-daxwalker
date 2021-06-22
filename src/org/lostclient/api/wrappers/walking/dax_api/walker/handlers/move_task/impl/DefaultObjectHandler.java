@@ -1,5 +1,8 @@
 package org.lostclient.api.wrappers.walking.dax_api.walker.handlers.move_task.impl;
 
+import org.lostclient.api.accessor.GameObjects;
+import org.lostclient.api.accessor.Players;
+import org.lostclient.api.wrappers.interactives.GameObject;
 import org.lostclient.api.wrappers.walking.dax_api.walker.handlers.move_task.MoveTaskHandler;
 import org.lostclient.api.wrappers.walking.dax_api.walker.handlers.passive_action.PassiveAction;
 import org.lostclient.api.wrappers.walking.dax_api.walker.models.DaxLogger;
@@ -8,12 +11,12 @@ import org.lostclient.api.wrappers.walking.dax_api.walker.models.enums.ActionRes
 import org.lostclient.api.wrappers.walking.dax_api.walker.models.enums.MoveActionResult;
 import org.lostclient.api.wrappers.walking.dax_api.walker.utils.AccurateMouse;
 import org.lostclient.api.wrappers.walking.dax_api.walker.utils.GenericUtil;
-import org.lostclient.api.wrappers.walking.dax_api.walker.utils.camera.DaxCamera;
 import org.lostclient.api.wrappers.walking.dax_api.walker.utils.path.DaxPathFinder;
 
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class DefaultObjectHandler implements MoveTaskHandler, DaxLogger {
@@ -63,7 +66,7 @@ public class DefaultObjectHandler implements MoveTaskHandler, DaxLogger {
     }
 
     private GameObject[] getValid(MoveTask moveTask) {
-        GameObject[] objects = Objects.findNearest(15, filter());
+        GameObject[] objects = GameObjects.all((o) -> o.distance() <= 15 && Arrays.stream(o.getActions()).anyMatch(MATCHES::contains)).toArray(GameObject[]::new);
 
         if (getDirection(moveTask) == Direction.UP) {
             log("This object is leading us upwards.");
@@ -77,17 +80,8 @@ public class DefaultObjectHandler implements MoveTaskHandler, DaxLogger {
                     .toArray(GameObject[]::new);
         }
 
-        Arrays.sort(objects, Comparator.comparingDouble(o -> o.getTile().distanceDouble(moveTask.getDestination())));
+        Arrays.sort(objects, Comparator.comparingDouble(o -> o.getTile().distance(moveTask.getDestination())));
         return objects;
-    }
-
-    private Predicate<GameObject> filter() {
-        return rsObject -> {
-            GameObjectDefinition definition = rsObject.getDefinition();
-            return Stream.of(definition).anyMatch(rsObjectDefinition ->
-                    Arrays.stream(rsObjectDefinition.getActions()).anyMatch(MATCHES::contains)
-                                                 );
-        };
     }
 
     private boolean handle(MoveTask moveTask, GameObject object, List<String> actions) {
@@ -95,9 +89,9 @@ public class DefaultObjectHandler implements MoveTaskHandler, DaxLogger {
     }
 
     private boolean handle(MoveTask moveTask, GameObject object, String... action) {
-        if (!object.isOnScreen() || !object.isInteractable()) {
-            DaxCamera.focus(object);
-        }
+//        if (!object.isOnScreen() || !object.isInteractable()) {
+//            DaxCamera.focus(object);
+//        }
 
         String[] clickActions = action;
 

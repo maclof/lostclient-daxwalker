@@ -1,6 +1,7 @@
 package org.lostclient.api.wrappers.walking.dax_api.shared.helpers.questing;
 
 import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.InterfaceHelper;
+import org.lostclient.api.wrappers.widgets.WidgetChild;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,7 +20,7 @@ public class QuestHelper {
             }
             System.out.println(rsInterface.getText());
             if (Arrays.asList(actions).contains("Read Journal:")){
-                quests.add(new Quest(rsInterface.getText(), Quest.State.getState(rsInterface.getTextColour())));
+                quests.add(new Quest(rsInterface.getText(), Quest.State.getState(rsInterface.getWidget().getColor())));
             }
         }
         return quests;

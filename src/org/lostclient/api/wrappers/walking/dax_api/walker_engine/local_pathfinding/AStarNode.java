@@ -1,5 +1,7 @@
 package org.lostclient.api.wrappers.walking.dax_api.walker_engine.local_pathfinding;
 
+import org.lostclient.api.wrappers.map.Tile;
+
 public class AStarNode {
 
     private int x, y, z, collisionData;
@@ -173,7 +175,7 @@ public class AStarNode {
     }
 
     public Tile toTile(){
-        return new Tile(x, y, z, Tile.TYPES.WORLD);
+        return new Tile(x, y, z);
     }
 
     public static String stringID(Tile tile){

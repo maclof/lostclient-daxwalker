@@ -1,5 +1,6 @@
 package org.lostclient.api.wrappers.walking.dax_api.walker_engine.bfs;
 
+import org.lostclient.api.wrappers.map.Tile;
 import org.lostclient.api.wrappers.walking.dax_api.shared.NodeInfo;
 import org.lostclient.api.wrappers.walking.dax_api.shared.PathFindingNode;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.WaitFor;

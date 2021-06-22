@@ -1,5 +1,7 @@
 package org.lostclient.api.wrappers.walking.dax_api.walker.handlers.move_task.impl;
 
+import org.lostclient.api.utilities.math.Calculations;
+import org.lostclient.api.wrappers.walking.Walking;
 import org.lostclient.api.wrappers.walking.dax_api.walker.handlers.move_task.MoveTaskHandler;
 import org.lostclient.api.wrappers.walking.dax_api.walker.handlers.passive_action.PassiveAction;
 import org.lostclient.api.wrappers.walking.dax_api.walker.models.MoveTask;
@@ -29,7 +31,8 @@ public class DefaultWalkHandler implements MoveTaskHandler {
     }
 
     private int getDistanceOffset() {
-        return Options.isRunEnabled() ? Calculations.randomSD(3, 10, 7, 2) : Calculations.randomSD(2, 10, 5, 2);
+//        return Walking.isRunEnabled() ? Calculations.randomSD(3, 10, 7, 2) : Calculations.randomSD(2, 10, 5, 2);
+        return Walking.isRunEnabled() ? Calculations.random(3, 10) : Calculations.random(2, 10);
     }
 
 }

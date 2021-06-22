@@ -1,5 +1,7 @@
 package org.lostclient.api.wrappers.walking.dax_api.walker_engine.local_pathfinding;
 
+import org.lostclient.api.accessor.Players;
+import org.lostclient.api.interfaces.Locatable;
 import org.lostclient.api.wrappers.map.Tile;
 import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.BankHelper;
 
@@ -43,7 +45,7 @@ public class Reachable {
         double closestDistance = Integer.MAX_VALUE;
         Tile playerPosition = Players.localPlayer().getTile();
         for (Tile positionable : tiles) {
-            double distance = playerPosition.distanceDouble(positionable);
+            double distance = playerPosition.distance(positionable);
             if (distance < closestDistance) {
                 closestDistance = distance;
                 closest = positionable;

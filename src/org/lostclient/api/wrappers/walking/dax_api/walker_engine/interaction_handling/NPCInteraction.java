@@ -1,13 +1,24 @@
 package org.lostclient.api.wrappers.walking.dax_api.walker_engine.interaction_handling;
 
+import org.lostclient.api.accessor.NPCs;
+import org.lostclient.api.accessor.Players;
+import org.lostclient.api.utilities.MethodProvider;
+import org.lostclient.api.utilities.internal.RSPlayer;
+import org.lostclient.api.utilities.math.Calculations;
+import org.lostclient.api.wrappers.input.Keyboard;
+import org.lostclient.api.wrappers.interactives.Character;
+import org.lostclient.api.wrappers.interactives.NPC;
+import org.lostclient.api.wrappers.interactives.Player;
 import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.InterfaceHelper;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.Loggable;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.WaitFor;
+import org.lostclient.api.wrappers.widgets.WidgetChild;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
@@ -37,13 +48,13 @@ public class NPCInteraction implements Loggable {
 
     /**
      *
-     * @param rsnpcFilter
+     * @param predicate
      * @param talkOptions
      * @param replyAnswers
      * @return
      */
-    public static boolean talkTo(Filter<NPC> rsnpcFilter, String[] talkOptions, String[] replyAnswers) {
-        if (!clickNpcAndWaitChat(rsnpcFilter, talkOptions)){
+    public static boolean talkTo(Predicate<NPC> predicate, String[] talkOptions, String[] replyAnswers) {
+        if (!clickNpcAndWaitChat(predicate, talkOptions)){
             return false;
         }
         handleConversation(replyAnswers);
@@ -52,30 +63,28 @@ public class NPCInteraction implements Loggable {
 
     /**
      *
-     * @param rsnpcFilter
+     * @param predicate
      * @param options
      * @return
      */
-    public static boolean clickNpcAndWaitChat(Filter<NPC> rsnpcFilter, String... options) {
-        return clickNpc(rsnpcFilter, options) && waitForConversationWindow();
+    public static boolean clickNpcAndWaitChat(Predicate<NPC> predicate, String... options) {
+        return clickNpc(predicate, options) && waitForConversationWindow();
     }
 
-    public static boolean clickNpc(Filter<NPC> rsnpcFilter, String... options) {
-        NPC[] rsnpcs = NPCs.findNearest(rsnpcFilter);
-        if (rsnpcs.length < 1) {
+    public static boolean clickNpc(Predicate<NPC> predicate, String... options) {
+        NPC npc = NPCs.closest(predicate);
+        if (npc == null) {
             getInstance().log("Cannot find NPC.");
             return false;
         }
-
-        NPC npc = rsnpcs[0];
         return InteractionHelper.click(npc, options);
     }
 
     public static boolean waitForConversationWindow(){
-        RSPlayer player = Players.localPlayer();
-        RSCharacter rsCharacter = null;
+        Player player = Players.localPlayer();
+        Character rsCharacter = null;
         if (player != null){
-            rsCharacter = player.getInteractingCharacter();
+            rsCharacter = player.getTarget();
         }
         return WaitFor.condition(rsCharacter != null ? WaitFor.getMovementRandomSleep(rsCharacter) : 10000, () -> {
             if (isConversationWindowUp()) {
@@ -86,7 +95,7 @@ public class NPCInteraction implements Loggable {
     }
 
     public static boolean isConversationWindowUp(){
-        return Arrays.stream(ALL_WINDOWS).anyMatch(Interfaces::isInterfaceSubstantiated);
+        return Arrays.stream(ALL_WINDOWS).anyMatch(InterfaceHelper::isInterfaceSubstantiated);
     };
 
     public static void handleConversationRegex(String regex){
@@ -106,9 +115,10 @@ public class NPCInteraction implements Loggable {
                 continue;
             }
 
-            MethodProvider.sleep(Calculations.randomSD(350, 2250, 775, 350));
+//            MethodProvider.sleep(Calculations.randomSD(350, 2250, 775, 350));
+            MethodProvider.sleep(Calculations.random(350, 2250));
             getInstance().log("Replying with option: " + selectableOptions.get(0).getText());
-            Keyboard.typeString(selectableOptions.get(0).getIndex() + "");
+            Keyboard.type(selectableOptions.get(0).getIndex() + "", true);
             waitForNextOption();
         }
     }
@@ -139,10 +149,11 @@ public class NPCInteraction implements Loggable {
                 if(blackList.contains(selected.getText())){
                     continue;
                 }
-                MethodProvider.sleep(Calculations.randomSD(350, 2250, 775, 350));
+//                MethodProvider.sleep(Calculations.randomSD(350, 2250, 775, 350));
+                MethodProvider.sleep(Calculations.random(350, 2250));
                 getInstance().log("Replying with option: " + selected.getText());
                 blackList.add(selected.getText());
-                Keyboard.typeString(selected.getIndex() + "");
+                Keyboard.type(selected.getIndex() + "", true);
                 waitForNextOption();
                 limit = 0;
                 break;
@@ -172,7 +183,7 @@ public class NPCInteraction implements Loggable {
      */
     private static void clickHereToContinue(){
         getInstance().log("Clicking continue.");
-        Keyboard.typeKeys(' ');
+        Keyboard.type(" ", false);
         waitForNextOption();
     }
 
@@ -196,7 +207,7 @@ public class NPCInteraction implements Loggable {
     private static List<WidgetChild> getConversationDetails(){
         for (int window : ALL_WINDOWS){
             List<WidgetChild> details = InterfaceHelper.getAllInterfaces(window).stream().filter(rsInterfaceChild -> {
-                if (rsInterfaceChild.getTextureID() != -1) {
+                if (rsInterfaceChild.getTextureId() != -1) {
                     return false;
                 }
                 String text = rsInterfaceChild.getText();

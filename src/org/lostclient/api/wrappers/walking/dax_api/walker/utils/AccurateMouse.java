@@ -3,8 +3,12 @@ package org.lostclient.api.wrappers.walking.dax_api.walker.utils;
 import org.lostclient.api.Client;
 import org.lostclient.api.interfaces.Interactable;
 import org.lostclient.api.interfaces.Locatable;
+import org.lostclient.api.utilities.MethodProvider;
+import org.lostclient.api.utilities.internal.RSMenuAction;
+import org.lostclient.api.utilities.internal.RSModel;
 import org.lostclient.api.utilities.math.Calculations;
 import org.lostclient.api.wrappers.input.Mouse;
+import org.lostclient.api.wrappers.item.Item;
 import org.lostclient.api.wrappers.map.Tile;
 import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.ItemHelper;
 import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.NPCHelper;
@@ -31,11 +35,11 @@ public class AccurateMouse {
     }
 
     public static void move(Point point) {
-        Mouse.move(point.x, point.y);
+        Mouse.move(point);
     }
 
     public static void click(int button) {
-        click(Mouse.getPos(), button);
+        click(Mouse.getMousePosition(), button);
     }
 
     public static void click(int x, int y) {
@@ -51,13 +55,15 @@ public class AccurateMouse {
     }
 
     public static void click(Point point, int button) {
-        if (!Mouse.getPos().equals(point)) {
-            Mouse.move(point.x, point.y);
+        if (!Mouse.getMousePosition().equals(point)) {
+            Mouse.move(point);
         }
-        Mouse.sendPress(point, button);
-        MethodProvider.sleep(Calculations.randomSD(5, 180, 60, 25));
-        Mouse.sendRelease(point, button);
-        Mouse.sendClickEvent(point, button);
+//        Mouse.sendPress(point, button);
+////        MethodProvider.sleep(Calculations.randomSD(5, 180, 60, 25));
+//        MethodProvider.sleep(Calculations.random(5, 180));
+//        Mouse.sendRelease(point, button);
+//        Mouse.sendClickEvent(point, button);
+        Mouse.click(point, button);
     }
 
 
@@ -84,7 +90,7 @@ public class AccurateMouse {
                 return false;
             }
 
-            if (!Mouse.getPos().equals(point)) {
+            if (!Mouse.getMousePosition().equals(point)) {
                 AccurateMouse.move(point);
                 continue;
             } else {
@@ -123,7 +129,7 @@ public class AccurateMouse {
             name = rsObjectDefinition != null ? rsObjectDefinition.getName() : null;
             model = rsObject.getModel();
         } else if (clickable instanceof Item) {
-            name = ItemHelper.getItemName((Item) clickable);
+            name = ((Item) clickable).getName();
         }
         return action(model, clickable, name, hover, clickActions);
     }
@@ -187,7 +193,7 @@ public class AccurateMouse {
     }
 
     public static boolean isHoveringScreenTileWalkHere(Tile destination) {
-        return isWalkingPoint(Mouse.getPos(), destination);
+        return isWalkingPoint(Mouse.getMousePosition(), destination);
     }
 
     /**
@@ -231,7 +237,7 @@ public class AccurateMouse {
             return false;
         }
 
-        if (point.distance(Mouse.getPos()) < Mouse.getSpeed() / 20) {
+        if (point.distance(Mouse.getMousePosition()) < Mouse.getSpeed() / 20) {
             Mouse.hop(point);
         } else {
             Mouse.move(point);
@@ -283,7 +289,7 @@ public class AccurateMouse {
 
         Rectangle area = clickable instanceof Item ? ((Item) clickable).getArea() : ((WidgetChild) clickable).getAbsoluteBounds();
         String uptext = Game.getUptext();
-        if (area.contains(Mouse.getPos())) {
+        if (area.contains(Mouse.getMousePosition())) {
             if (uptext != null && (clickActions.length == 0 || Arrays.stream(clickActions).anyMatch(uptext::contains))) {
                 if (hover) {
                     return true;
@@ -304,7 +310,7 @@ public class AccurateMouse {
         }
     }
 
-    private static boolean handleMenuNode(RSMenuNode rsMenuNode, boolean hover) {
+    private static boolean handleMenuNode(RSMenuAction rsMenuNode, boolean hover) {
         if (rsMenuNode == null) {
             return false;
         }
@@ -452,7 +458,7 @@ public class AccurateMouse {
     private static Area getTileModel(Tile tile) {
         Polygon tilePolygon = Projection.getTileBoundsPoly(tile, 0);
         Area area = new Area(tilePolygon);
-        for (GameObject rsObject : Objects.getAll(15, Filters.Objects.inArea(new Area(tile, 3)))) {
+        for (GameObject rsObject : Objects.getAll(15, GameObjectHelper.inAreaPredicate(new Area(tile, 3)))) {
             GameObjectDefinition definition = rsObject.getDefinition();
             if (definition == null) {
                 continue;
@@ -471,7 +477,7 @@ public class AccurateMouse {
             Area objectArea = new Area(rsModel.getEnclosedArea());
             area.subtract(objectArea);
         }
-        for (RSGroundItem rsGroundItem : GroundItems.find(new Filter<RSGroundItem>() {
+        for (RSGroundItem rsGroundItem : GroundItems.find(new Predicate<RSGroundItem>() {
             @Override
             public boolean accept(RSGroundItem rsGroundItem) {
                 return rsGroundItem.getTile().equals(tile);

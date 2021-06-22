@@ -1,8 +1,10 @@
 package org.lostclient.api.wrappers.walking.dax_api.walker.utils.path;
 
+import org.lostclient.api.Client;
 import org.lostclient.api.accessor.Players;
 import org.lostclient.api.interfaces.Locatable;
 import org.lostclient.api.utilities.MethodProvider;
+import org.lostclient.api.wrappers.interactives.Character;
 import org.lostclient.api.wrappers.interactives.Entity;
 import org.lostclient.api.wrappers.interactives.NPC;
 import org.lostclient.api.wrappers.interactives.Player;
@@ -68,7 +70,7 @@ public class DaxPathFinder {
      * @return The path your character is following.
      */
     public static List<Tile> getWalkingQueue(Destination[][] map) {
-        Tile destination = Game.getDestination();
+        Tile destination = new Tile(Client.getClient().getDestinationX(), Client.getClient().getDestinationY(), Client.getClient().getClient_plane());
         if (destination == null) {
             destination = getNextWalkingTile();
         }
@@ -264,7 +266,7 @@ public class DaxPathFinder {
         return getWalkingHistory(Players.localPlayer());
     }
 
-    private static ArrayList<Tile> getWalkingHistory(Entity rsCharacter){
+    private static ArrayList<Tile> getWalkingHistory(Character rsCharacter){
         ArrayList<Tile> walkingQueue = new ArrayList<>();
         if (rsCharacter == null){
             return walkingQueue;

@@ -40,7 +40,7 @@ public class FairyRing {
 		if(location == null)
 			return false;
 		if (PlayerSettings.getBitValue(ELITE_DIARY_VARBIT) == 0 && Equipment.count(DRAMEN_STAFFS) == 0){
-			if (!InteractionHelper.click(InteractionHelper.getItem(Filters.Items.idEquals(DRAMEN_STAFFS)), "Wield")){
+			if (!InteractionHelper.click(InteractionHelper.getItem(ItemHelper.idEqualsPredicate(DRAMEN_STAFFS)), "Wield")){
 				return false;
 			}
 		}
@@ -60,8 +60,8 @@ public class FairyRing {
 	}
 
 	private static boolean hasCachedLocation(Locations location){
-		ring = Objects.findNearest(25,"Fairy ring");
-		return ring.length > 0 && Filters.Objects.actionsContains(location.toString()).test(ring[0]);
+		ring = GameObjectHelper.findClosest(25,"Fairy ring");
+		return ring.length > 0 && GameObjectHelper.actionsContainsPredicate(location.toString()).test(ring[0]);
 	}
 
 	private static boolean takeLastDestination(Locations location){

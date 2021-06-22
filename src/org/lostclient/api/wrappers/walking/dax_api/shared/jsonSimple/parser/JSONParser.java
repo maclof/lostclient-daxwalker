@@ -68,7 +68,7 @@ public class JSONParser {
 	 * @return The position of the beginning of the current token.
 	 */
 	public int getPosition(){
-		return lexer.getTile();
+		return lexer.getPosition();
 	}
 	
 	public Object parse(String s) throws ParseException {

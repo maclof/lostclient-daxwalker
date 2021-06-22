@@ -1,7 +1,23 @@
 package org.lostclient.api.wrappers.walking.dax_api.walker_engine.navigation_utils;
 
+import org.lostclient.api.accessor.Dialogues;
+import org.lostclient.api.accessor.NPCs;
+import org.lostclient.api.accessor.PlayerSettings;
+import org.lostclient.api.accessor.Players;
+import org.lostclient.api.containers.equipment.Equipment;
+import org.lostclient.api.containers.inventory.Inventory;
+import org.lostclient.api.utilities.math.Calculations;
+import org.lostclient.api.wrappers.interactives.GameObject;
+import org.lostclient.api.wrappers.interactives.NPC;
+import org.lostclient.api.wrappers.item.Item;
+import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.skill.Skill;
+import org.lostclient.api.wrappers.skill.Skills;
+import org.lostclient.api.wrappers.walking.Walking;
 import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.ItemHelper;
 import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.GameObjectHelper;
+import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.NPCHelper;
+import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.StringHelper;
 import org.lostclient.api.wrappers.walking.dax_api.walker.utils.AccurateMouse;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.Loggable;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.WaitFor;
@@ -256,14 +272,14 @@ public class NavigationSpecialCase implements Loggable {
 
             case BRIMHAVEN_DUNGEON:
                 if (PlayerSettings.getConfig(393) != 1){
-                    if (!InteractionHelper.click(InteractionHelper.getNPC(Filters.NPCs.nameEquals("Saniboch")), "Pay")) {
+                    if (!InteractionHelper.click(InteractionHelper.getNPC(NPCHelper.nameEqualsPredicate("Saniboch")), "Pay")) {
                         getInstance().log("Could not pay saniboch");
                         break;
                     }
                     NPCInteraction.handleConversation("Yes","Pay 875 coins to enter once");
                     return true;
                 } else {
-                    if (clickObject(Filters.Objects.nameEquals("Dungeon entrance"), "Enter", () -> Players.localPlayer().getTile().getY() > 4000 ?
+                    if (clickObject(GameObjectHelper.nameEqualsPredicate("Dungeon entrance"), "Enter", () -> Players.localPlayer().getTile().getY() > 4000 ?
                             WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)){
                         return true;
                     } else {
@@ -274,7 +290,7 @@ public class NavigationSpecialCase implements Loggable {
 
             case RELLEKA_UPPER_PORT:
             case SMALL_PIRATES_COVE_AREA:
-                if (!NPCInteraction.talkTo(Filters.NPCs.nameContains("Lokar"), new String[]{"Travel"}, new String[]{
+                if (!NPCInteraction.talkTo(NPCHelper.nameContainsPredicate("Lokar"), new String[]{"Travel"}, new String[]{
                     "That's fine, I'm just going to Pirates' Cove."})){
                     System.out.println("Was not able to travel with Lokar");
                     break;
@@ -283,7 +299,7 @@ public class NavigationSpecialCase implements Loggable {
                 break;
             case CAPTAIN_BENTLY_PIRATES_COVE:
             case CAPTAIN_BENTLY_LUNAR_ISLE:
-                if (!NPCInteraction.talkTo(Filters.NPCs.nameContains("Captain"), new String[]{"Travel"}, new String[]{})){
+                if (!NPCInteraction.talkTo(NPCHelper.nameContainsPredicate("Captain"), new String[]{"Travel"}, new String[]{})){
                     System.out.println("Was not able to travel with Captain");
                     break;
                 }
@@ -308,10 +324,10 @@ public class NavigationSpecialCase implements Loggable {
 
 
             case SHILO_ENTRANCE: break;
-            case SHILO_INSIDE: return NPCInteraction.talkTo(Filters.NPCs.nameEquals("Mosol Rei"), new String[]{"Talk-to"}, new String[]{"Yes, Ok, I'll go into the village!"});
+            case SHILO_INSIDE: return NPCInteraction.talkTo(NPCHelper.nameEqualsPredicate("Mosol Rei"), new String[]{"Talk-to"}, new String[]{"Yes, Ok, I'll go into the village!"});
 
             case RELLEKKA_WEST_BOAT:
-                if (NPCInteraction.talkTo(Filters.NPCs.actionsEquals("Waterbirth"), new String[]{"Waterbirth"}, new String[0])){
+                if (NPCInteraction.talkTo(NPCHelper.actionsEqualsPredicate("Waterbirth"), new String[]{"Waterbirth"}, new String[0])){
                     WaitFor.milliseconds(2000, 3000);
                 }
                 break;
@@ -319,7 +335,7 @@ public class NavigationSpecialCase implements Loggable {
             case MISCELLANIA_TO_RELLEKKA:
             case RELLEKKA_TO_MISCELLANIA:
                 final Tile curr = Players.localPlayer().getTile();
-                if (NPCInteraction.clickNpc(Filters.NPCs.actionsEquals("Rellekka","Miscellania"), "Rellekka","Miscellania")){
+                if (NPCInteraction.clickNpc(NPCHelper.actionsEqualsPredicate("Rellekka","Miscellania"), "Rellekka","Miscellania")){
                     WaitFor.condition(10000,() -> Players.localPlayer().getTile().distance(curr) > 20 ?
                         WaitFor.Return.SUCCESS :
                         WaitFor.Return.IGNORE);
@@ -328,9 +344,8 @@ public class NavigationSpecialCase implements Loggable {
                 break;
 
             case WATERBIRTH:
-                String option = NPCs.find(Filters.NPCs.nameContains("Jarvald").combine(Filters.NPCs.actionsContains(
-                		"Travel"),true)).length > 0 ? "Travel" : "Talk-to";
-                if (NPCInteraction.talkTo(Filters.NPCs.nameEquals("Jarvald"), new String[]{option}, new String[]{
+                String option = NPCs.closest(NPCHelper.nameContainsPredicate("Jarvald").and(NPCHelper.actionsContainsPredicate("Travel"))) != null ? "Travel" : "Talk-to";
+                if (NPCInteraction.talkTo(NPCHelper.nameEqualsPredicate("Jarvald"), new String[]{option}, new String[]{
                         "What Jarvald is doing.",
                         "Can I come?",
                         "YES",
@@ -353,18 +368,18 @@ public class NavigationSpecialCase implements Loggable {
 
             case ZANARIS_RING:
                 if (Equipment.count(772) == 0){
-                    if (!InteractionHelper.click(InteractionHelper.getItem(Filters.Items.idEquals(772)), "Wield")){
+                    if (!InteractionHelper.click(InteractionHelper.getItem(ItemHelper.idEqualsPredicate(772)), "Wield")){
                         getInstance().log("Could not equip Dramen staff.");
                         break;
                     }
                 }
                 if (InteractionHelper.click(
-		                InteractionHelper.getGameObject(Filters.Objects.nameEquals("Door")), "Open", () -> ZANARIS_RING.getTile().distance(Players.localPlayer().getTile()) < 5 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)){
+		                InteractionHelper.getGameObject(GameObjectHelper.nameEqualsPredicate("Door")), "Open", () -> ZANARIS_RING.getTile().distance(Players.localPlayer().getTile()) < 5 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)){
                     return true;
                 }
                 break;
             case LUMBRIDGE_ZANARIS_SHED:
-                if (InteractionHelper.click(InteractionHelper.getGameObject(Filters.Objects.nameEquals("Fairy ring")),
+                if (InteractionHelper.click(InteractionHelper.getGameObject(GameObjectHelper.nameEqualsPredicate("Fairy ring")),
 		                "Use", () -> LUMBRIDGE_ZANARIS_SHED.getTile().distance(Players.localPlayer().getTile()) < 5 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)){
                     return true;
                 }
@@ -375,9 +390,9 @@ public class NavigationSpecialCase implements Loggable {
             case FINISHED_ROPE_TO_ROCK:
                 if (ItemHelper.use(954)){
                     InteractionHelper.focusCamera(
-		                    InteractionHelper.getGameObject(Filters.Objects.actionsContains("Swim to")));
+		                    InteractionHelper.getGameObject(GameObjectHelper.actionsContainsPredicate("Swim to")));
                     if (InteractionHelper.click(
-		                    InteractionHelper.getGameObject(Filters.Objects.actionsContains("Swim to")), "Use Rope", () -> Players.localPlayer().getTile().equals(new Tile(2513, 3468, 0)) ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)){
+		                    InteractionHelper.getGameObject(GameObjectHelper.actionsContainsPredicate("Swim to")), "Use Rope", () -> Players.localPlayer().getTile().equals(new Tile(2513, 3468, 0)) ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)){
                         return true;
                     }
                 }
@@ -388,9 +403,9 @@ public class NavigationSpecialCase implements Loggable {
                 break;
             case WATERFALL_DUNGEON_ENTRANCE:
                 if (WATERFALL_DUNGEON.getTile().distance(Players.localPlayer().getTile()) < 500){
-                    return InteractionHelper.click(InteractionHelper.getGameObject(Filters.Objects.nameEquals("Door")), "Open", () -> WATERFALL_DUNGEON_ENTRANCE.getTile().distance(Players.localPlayer().getTile()) < 5 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE);
+                    return InteractionHelper.click(InteractionHelper.getGameObject(GameObjectHelper.nameEqualsPredicate("Door")), "Open", () -> WATERFALL_DUNGEON_ENTRANCE.getTile().distance(Players.localPlayer().getTile()) < 5 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE);
                 } else if (ItemHelper.use(954)){
-                    if (InteractionHelper.click(InteractionHelper.getGameObject(Filters.Objects.nameContains("Dead tree")), "Use Rope", () -> Players.localPlayer().getTile().equals(new Tile(2511, 3463, 0)) ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)){
+                    if (InteractionHelper.click(InteractionHelper.getGameObject(GameObjectHelper.nameContainsPredicate("Dead tree")), "Use Rope", () -> Players.localPlayer().getTile().equals(new Tile(2511, 3463, 0)) ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)){
                         return true;
                     }
                 }
@@ -402,36 +417,35 @@ public class NavigationSpecialCase implements Loggable {
 
             case WATERFALL_DUNGEON:
                 if (InteractionHelper.click(
-		                InteractionHelper.getGameObject(Filters.Objects.idEquals(2010)), "Open", () -> Players.localPlayer().getTile().getX() == WATERFALL_DUNGEON.x ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)){
+		                InteractionHelper.getGameObject(GameObjectHelper.idEqualsPredicate(2010)), "Open", () -> Players.localPlayer().getTile().getX() == WATERFALL_DUNGEON.x ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)){
                     return true;
                 }
                 getInstance().log("Failed to get to waterfall dungeon");
                 break;
             case WATERFALL_FALL_DOWN:
-                if (InteractionHelper.click(InteractionHelper.getGameObject(Filters.Objects.actionsContains("Get in")), "Get in", () -> Players.localPlayer().getTile().distance(new Tile(2527, 3413, 0)) < 5 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)){
+                if (InteractionHelper.click(InteractionHelper.getGameObject(GameObjectHelper.actionsContainsPredicate("Get in")), "Get in", () -> Players.localPlayer().getTile().distance(new Tile(2527, 3413, 0)) < 5 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)){
                     return true;
                 }
                 getInstance().log("Failed to fall down waterfall");
                 break;
 
             case KALPHITE_TUNNEL:
-                if (clickObject(Filters.Objects.nameEquals("Rope"), "Climb-up", () -> Players.localPlayer().getTile().getY() < 9000 ?
+                if (clickObject(GameObjectHelper.nameEqualsPredicate("Rope"), "Climb-up", () -> Players.localPlayer().getTile().getY() < 9000 ?
                         WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)) {
                     return true;
                 }
                 break;
             case KALPHITE_TUNNEL_INSIDE:
-                if (clickObject(Filters.Objects.nameEquals("Tunnel entrance").and(Filters.Objects.actionsEquals("Climb-down")), "Climb-down", () -> Players.localPlayer().getTile().getY() > 4000 ?
+                if (clickObject(GameObjectHelper.nameEqualsPredicate("Tunnel entrance").and(GameObjectHelper.actionsEqualsPredicate("Climb-down")), "Climb-down", () -> Players.localPlayer().getTile().getY() > 4000 ?
                         WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)){
                     return true;
                 } else {
-                    GameObject[] objects = Objects.findNearest(20, "Tunnel entrance");
+                    GameObject[] objects = GameObjectHelper.findClosest(20, "Tunnel entrance");
                     if (objects.length > 0 && walkToObject(objects[0])){
-                        GameObjectDefinition definition = objects[0].getDefinition();
-                        String[] actions = definition != null ? definition.getActions() : null;
+                        String[] actions = objects[0].getActions();
                         if (actions != null && Arrays.stream(actions).noneMatch(s -> s.startsWith("Climb-down"))){
-                            Item[] items = Inventory.find(954);
-                            if (items.length > 0 && items[0].click() && clickObject(Filters.Objects.nameEquals("Tunnel entrance"), "Use", () -> WaitFor.Return.SUCCESS)){
+                            Item item = Inventory.get(954);
+                            if (item != null && item.interact(item.getActions()[0]) && clickObject(GameObjectHelper.nameEqualsPredicate("Tunnel entrance"), "Use", () -> WaitFor.Return.SUCCESS)){
                                 WaitFor.milliseconds(3000, 6000);
                             }
                         }
@@ -440,13 +454,9 @@ public class NavigationSpecialCase implements Loggable {
                 getInstance().log("Unable to go inside tunnel.");
                 break;
             case DWARF_CARTS_GE:
-                GameObject[] objects = Objects.find(15, Filters.Objects.nameEquals("Train cart").combine(new Filter<GameObject>() {
-                    @Override
-                    public boolean accept(GameObject rsObject) {
-                        return rsObject.getTile().getY() == 10171;
-                    }
-                }, true));
-                Sorting.sortByDistance(objects, new Tile(2935, 10172, 0), true);
+                GameObject[] objects = GameObjectHelper.find(15, GameObjectHelper.nameEqualsPredicate("Train cart").and((o) -> o.getTile().getY() == 10171));
+                Tile checkTile = new Tile(2935, 10172, 0);
+                objects = Arrays.stream(objects).sorted((o1, o2) -> (int)o1.distance(checkTile) - (int)o2.distance(checkTile)).toArray(GameObject[]::new);
                 if (clickObject(objects[0], "Ride", () -> Players.localPlayer().getTile().getX() == specialLocation.x ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)){
                     getInstance().log("Rode cart to GE");
                     return true;
@@ -460,7 +470,7 @@ public class NavigationSpecialCase implements Loggable {
                 break;
 
             case BRIMHAVEN_DUNGEON_SURFACE:
-                if (clickObject(Filters.Objects.nameEquals("Exit"), "Leave", () -> Players.localPlayer().getTile().getY() < 8000 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)){
+                if (clickObject(GameObjectHelper.nameEqualsPredicate("Exit"), "Leave", () -> Players.localPlayer().getTile().getY() < 8000 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)){
                     return true;
                 } else {
                     getInstance().log("Failed to exit dungeon.");
@@ -469,8 +479,7 @@ public class NavigationSpecialCase implements Loggable {
 
             case GNOME_ENTRANCE:
             case GNOME_EXIT:
-                if (clickObject(Filters.Objects.nameEquals("Gate").combine(Filters.Objects.actionsContains("Open"),
-		                true), "Open",
+                if (clickObject(GameObjectHelper.nameEqualsPredicate("Gate").and(GameObjectHelper.actionsContainsPredicate("Open")), "Open",
                         () -> {
                             if (NPCInteraction.isConversationWindowUp()) {
                                 NPCInteraction.handleConversation(NPCInteraction.GENERAL_RESPONSES);
@@ -486,7 +495,7 @@ public class NavigationSpecialCase implements Loggable {
 
             case GNOME_SHORTCUT_ELKOY_ENTER:
             case GNOME_SHORTCUT_ELKOY_EXIT:
-                if (NPCInteraction.clickNpc(Filters.NPCs.nameEquals("Elkoy"), new String[]{"Follow"})){
+                if (NPCInteraction.clickNpc(NPCHelper.nameEqualsPredicate("Elkoy"), new String[]{"Follow"})){
                     Tile current = Players.localPlayer().getTile();
                     if(WaitFor.condition(8000, () ->  Players.localPlayer().getTile().distance(current) > 20 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) != WaitFor.Return.SUCCESS){
                         return false;
@@ -498,7 +507,7 @@ public class NavigationSpecialCase implements Loggable {
 
             case GNOME_TREE_ENTRANCE:
             case GNOME_TREE_EXIT:
-                if (clickObject(Filters.Objects.nameEquals("Tree Door").combine(Filters.Objects.actionsContains("Open"), true), "Open",
+                if (clickObject(GameObjectHelper.nameEqualsPredicate("Tree Door").and(GameObjectHelper.actionsContainsPredicate("Open")), "Open",
                         () -> Players.localPlayer().getTile().getY() == 3492 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)){
                     WaitFor.milliseconds(1060, 1500);
                     return true;
@@ -509,7 +518,7 @@ public class NavigationSpecialCase implements Loggable {
                 break;
 
             case ZEAH_SAND_CRAB:
-                if (InteractionHelper.click(InteractionHelper.getNPC(Filters.NPCs.nameEquals("Sandicrahb")), "Quick-travel") && WaitFor.condition(10000, () -> Players.localPlayer().getTile().getY() >= 3457 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) == WaitFor.Return.SUCCESS){
+                if (InteractionHelper.click(InteractionHelper.getNPC(NPCHelper.nameEqualsPredicate("Sandicrahb")), "Quick-travel") && WaitFor.condition(10000, () -> Players.localPlayer().getTile().getY() >= 3457 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) == WaitFor.Return.SUCCESS){
                     getInstance().log("Paid for travel.");
                     return true;
                 } else {
@@ -517,7 +526,7 @@ public class NavigationSpecialCase implements Loggable {
                 }
                 break;
             case ZEAH_SAND_CRAB_ISLAND:
-                if (InteractionHelper.click(InteractionHelper.getNPC(Filters.NPCs.nameEquals("Sandicrahb")), "Quick-travel") && WaitFor.condition(10000, () -> Players.localPlayer().getTile().getY() < 3457 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) == WaitFor.Return.SUCCESS){
+                if (InteractionHelper.click(InteractionHelper.getNPC(NPCHelper.nameEqualsPredicate("Sandicrahb")), "Quick-travel") && WaitFor.condition(10000, () -> Players.localPlayer().getTile().getY() < 3457 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) == WaitFor.Return.SUCCESS){
                     getInstance().log("Paid for travel.");
                     return true;
                 } else {
@@ -563,7 +572,7 @@ public class NavigationSpecialCase implements Loggable {
             case PEST_CONTROL:
             case PORT_SARIM_PEST_CONTROL:
                 return InteractionHelper.click(
-		                InteractionHelper.getNPC(Filters.NPCs.actionsContains("Travel").combine(Filters.NPCs.nameEquals("Squire"), true)), "Travel")
+		                InteractionHelper.getNPC(NPCHelper.actionsContainsPredicate("Travel").and(NPCHelper.nameEqualsPredicate("Squire"))), "Travel")
                         && WaitFor.condition(10000, () -> ShipUtils.isOnShip() ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) == WaitFor.Return.SUCCESS;
 
             case PORT_SARIM_VEOS:
@@ -575,10 +584,10 @@ public class NavigationSpecialCase implements Loggable {
 
             case ARDY_LOG_WEST:
             case ARDY_LOG_EAST:
-                GameObject[] logSearch = Objects.findNearest(15, Filters.Objects.nameEquals("Log balance").combine(Filters.Objects.actionsContains("Walk-across"), true));
+                GameObject[] logSearch = GameObjectHelper.findClosest(15, GameObjectHelper.nameEqualsPredicate("Log balance").and(GameObjectHelper.actionsContainsPredicate("Walk-across")));
                 if (logSearch.length > 0 && AccurateMouse.click(logSearch[0], "Walk-across")){
-                    int agilityXP = Skills.getXP(Skill.AGILITY);
-                    if (WaitFor.condition(Calculations.random(7600, 1200), () -> Skills.getXP(Skill.AGILITY) > agilityXP ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) == WaitFor.Return.SUCCESS) {
+                    int agilityXP = Skills.getExperience(Skill.AGILITY);
+                    if (WaitFor.condition(Calculations.random(7600, 1200), () -> Skills.getExperience(Skill.AGILITY) > agilityXP ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) == WaitFor.Return.SUCCESS) {
                         return true;
                     }
                     if (Players.localPlayer().isMoving()){
@@ -593,7 +602,7 @@ public class NavigationSpecialCase implements Loggable {
                 break;
 
             case GNOME_WAYDAR:
-                if (NPCInteraction.clickNpc(Filters.NPCs.nameEquals("Daero"), new String[]{"Travel"})){
+                if (NPCInteraction.clickNpc(NPCHelper.nameEqualsPredicate("Daero"), new String[]{"Travel"})){
                     if (WaitFor.condition(5000, () -> Players.localPlayer().getTile().distance(GNOME_WAYDAR.getTile()) < 10 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) != WaitFor.Return.SUCCESS){
                         break;
                     }
@@ -603,7 +612,7 @@ public class NavigationSpecialCase implements Loggable {
                 break;
 
             case CRASH_ISLAND:
-                if (NPCInteraction.clickNpc(Filters.NPCs.nameEquals("Waydar"), new String[]{"Travel"})){
+                if (NPCInteraction.clickNpc(NPCHelper.nameEqualsPredicate("Waydar"), new String[]{"Travel"})){
                     if (WaitFor.condition(5000, () -> Players.localPlayer().getTile().distance(CRASH_ISLAND.getTile()) < 10 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) != WaitFor.Return.SUCCESS){
                         break;
                     }
@@ -613,7 +622,7 @@ public class NavigationSpecialCase implements Loggable {
                 break;
 
             case APE_ATOLL_GLIDER_CRASH:
-                if (NPCInteraction.clickNpc(Filters.NPCs.nameEquals("Lumdo"), new String[]{"Travel"})){
+                if (NPCInteraction.clickNpc(NPCHelper.nameEqualsPredicate("Lumdo"), new String[]{"Travel"})){
                     if (WaitFor.condition(5000, () -> Players.localPlayer().getTile().distance(APE_ATOLL_GLIDER_CRASH.getTile()) < 10 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) != WaitFor.Return.SUCCESS){
                         break;
                     }
@@ -622,7 +631,7 @@ public class NavigationSpecialCase implements Loggable {
                 }
                 break;
             case GNOME_DROPOFF:
-                if (NPCInteraction.clickNpc(Filters.NPCs.nameEquals("Waydar"), new String[]{"Travel"})){
+                if (NPCInteraction.clickNpc(NPCHelper.nameEqualsPredicate("Waydar"), new String[]{"Travel"})){
                     if (WaitFor.condition(5000, () -> Players.localPlayer().getTile().distance(CRASH_ISLAND.getTile()) < 10 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) != WaitFor.Return.SUCCESS){
                         break;
                     }
@@ -632,21 +641,21 @@ public class NavigationSpecialCase implements Loggable {
                 break;
 
             case HAM_OUTSIDE:
-                if (clickObject(Filters.Objects.nameEquals("Ladder"), "Climb-up", () -> Players.localPlayer().getTile().getY() < 4000 ?
+                if (clickObject(GameObjectHelper.nameEqualsPredicate("Ladder"), "Climb-up", () -> Players.localPlayer().getTile().getY() < 4000 ?
                         WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)) {
                     return true;
                 }
                 break;
 
             case HAM_INSIDE:
-                if (GameObjectHelper.exists(Filters.Objects.actionsContains("Pick-Lock"))){
-                    if (InteractionHelper.click(GameObjectHelper.get(Filters.Objects.actionsContains("Pick-Lock")), "Pick-Lock")){
+                if (GameObjectHelper.exists(GameObjectHelper.actionsContainsPredicate("Pick-Lock"))){
+                    if (InteractionHelper.click(GameObjectHelper.get(GameObjectHelper.actionsContainsPredicate("Pick-Lock")), "Pick-Lock")){
                         WaitFor.condition(
-		                        WaitFor.random(6000, 9000), () -> !GameObjectHelper.exists(Filters.Objects.actionsContains("Pick-Lock")) ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE);
+		                        WaitFor.random(6000, 9000), () -> !GameObjectHelper.exists(GameObjectHelper.actionsContainsPredicate("Pick-Lock")) ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE);
                         return true;
                     }
                 } else {
-                    if (InteractionHelper.click(GameObjectHelper.get(Filters.Objects.actionsContains("Climb-down")), "Climb-down")){
+                    if (InteractionHelper.click(GameObjectHelper.get(GameObjectHelper.actionsContainsPredicate("Climb-down")), "Climb-down")){
                         WaitFor.condition(3000, () -> HAM_INSIDE.getTile().distance(Players.localPlayer().getTile()) < 10 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE);
                         return true;
                     }
@@ -656,14 +665,14 @@ public class NavigationSpecialCase implements Loggable {
 
 
             case FEROX_ENCLAVE_PORTAL_F2P:
-                if(NPCInteraction.isConversationWindowUp() || clickObject(Filters.Objects.nameEquals("Large door"), "Open",() -> NPCInteraction.isConversationWindowUp() ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)){
+                if(NPCInteraction.isConversationWindowUp() || clickObject(GameObjectHelper.nameEqualsPredicate("Large door"), "Open",() -> NPCInteraction.isConversationWindowUp() ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)){
                     NPCInteraction.handleConversationRegex("Yes");
                     return WaitFor.condition(3000,
                             () -> FEROX_ENCLAVE_PORTAL_F2P.getTile().distance(Players.localPlayer().getTile()) < 10 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) == WaitFor.Return.SUCCESS;
                 }
                 break;
             case CASTLE_WARS_DOOR:
-                if(NPCInteraction.isConversationWindowUp() || clickObject(Filters.Objects.nameEquals("Castle Wars portal"), "Enter", () -> NPCInteraction.isConversationWindowUp() ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)){
+                if(NPCInteraction.isConversationWindowUp() || clickObject(GameObjectHelper.nameEqualsPredicate("Castle Wars portal"), "Enter", () -> NPCInteraction.isConversationWindowUp() ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)){
                     NPCInteraction.handleConversationRegex("Yes");
                     return WaitFor.condition(3000,
                             () -> CASTLE_WARS_DOOR.getTile().distance(Players.localPlayer().getTile()) < 10 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) == WaitFor.Return.SUCCESS;
@@ -671,7 +680,7 @@ public class NavigationSpecialCase implements Loggable {
                 break;
 
             case FOSSIL_ISLAND_BARGE:
-                if(clickObject(Filters.Objects.nameEquals("Rowboat"),"Travel",() -> NPCInteraction.isConversationWindowUp() ?
+                if(clickObject(GameObjectHelper.nameEqualsPredicate("Rowboat"),"Travel",() -> NPCInteraction.isConversationWindowUp() ?
                         WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)){
                     NPCInteraction.handleConversationRegex("Row to the barge and travel to the Digsite.");
                     return WaitFor.condition(5000,
@@ -783,9 +792,8 @@ public class NavigationSpecialCase implements Loggable {
             case FOSSIL_ISLAND_FERRY_ISLAND:
                 return takeFossilIslandBoat("Row out to sea.");
             case FOSSIL_ISLAND_FERRY_CAMP:
-                if(NPCs.find("Barge guard").length > 0){
-                    if(NPCInteraction.clickNpc(Filters.NPCs.nameEquals("Barge guard"),"Quick-Travel")){
-                        General.println("Success");
+                if(NPCs.closest("Barge guard") != null){
+                    if(NPCInteraction.clickNpc(NPCHelper.nameEqualsPredicate("Barge guard"),"Quick-Travel")){
                         return WaitFor.condition(8000,
                                 () -> FOSSIL_ISLAND_FERRY_CAMP.getTile().distance(Players.localPlayer().getTile()) < 10 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) == WaitFor.Return.SUCCESS;
                     }
@@ -794,23 +802,23 @@ public class NavigationSpecialCase implements Loggable {
                 }
                 break;
             case RELLEKKA_DOCK_FROM_ISLES:
-                return NPCInteraction.clickNpc(Filters.NPCs.actionsEquals("Rellekka"),"Rellekka") &&
+                return NPCInteraction.clickNpc(NPCHelper.actionsEqualsPredicate("Rellekka"),"Rellekka") &&
                         WaitFor.condition(15000,() -> RELLEKKA_DOCK_FROM_ISLES.getTile().distance(Players.localPlayer().getTile()) < 10
                                 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) == WaitFor.Return.SUCCESS;
             case JATIZSO_DOCK:
-                return NPCInteraction.clickNpc(Filters.NPCs.nameEquals("Mord Gunnars"),"Jatizso") &&
+                return NPCInteraction.clickNpc(NPCHelper.nameEqualsPredicate("Mord Gunnars"),"Jatizso") &&
                         WaitFor.condition(15000,() -> JATIZSO_DOCK.getTile().distance(Players.localPlayer().getTile()) < 10
                                 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) == WaitFor.Return.SUCCESS;
             case NEITIZNOT_DOCK:
-                return NPCInteraction.clickNpc(Filters.NPCs.nameEquals("Maria Gunnars"),"Neitiznot") &&
+                return NPCInteraction.clickNpc(NPCHelper.nameEqualsPredicate("Maria Gunnars"),"Neitiznot") &&
                         WaitFor.condition(15000,() -> NEITIZNOT_DOCK.getTile().distance(Players.localPlayer().getTile()) < 10
                                 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) == WaitFor.Return.SUCCESS;
 
             case OBSERVATORY_INSIDE:
-                return clickObject(Filters.Objects.nameEquals("Rope"),"Climb", () -> OBSERVATORY_INSIDE.getTile().distance(Players.localPlayer().getTile()) < 5
+                return clickObject(GameObjectHelper.nameEqualsPredicate("Rope"),"Climb", () -> OBSERVATORY_INSIDE.getTile().distance(Players.localPlayer().getTile()) < 5
                         ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) && WaitFor.milliseconds(600,1800) != null;
             case OBSERVATORY_OUTSIDE:
-                return (NPCInteraction.isConversationWindowUp() ||  clickObject(Filters.Objects.nameEquals("Door"),"Open",
+                return (NPCInteraction.isConversationWindowUp() ||  clickObject(GameObjectHelper.nameEqualsPredicate("Door"),"Open",
                         () -> NPCInteraction.isConversationWindowUp() ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE))
                         && WaitFor.condition(15000,() -> {
                     if(NPCInteraction.isConversationWindowUp())
@@ -822,10 +830,10 @@ public class NavigationSpecialCase implements Loggable {
             case MOSS_GIANT_ISLAND_ROPE:
             case MOSS_GIANT_ISLAND_ROPE_LANDING:
                 if(Players.localPlayer().getTile().distance(MOSS_GIANT_ISLAND_ROPE.getTile()) >= 2){
-                    Walking.blindWalkTo(MOSS_GIANT_ISLAND_ROPE.getTile());
+                    Walking.setWalkFlag(MOSS_GIANT_ISLAND_ROPE.getTile());
                     WaitFor.milliseconds(200,400);
                 }
-                if (clickObject(Filters.Objects.nameEquals("Ropeswing"), "Swing-on", () -> Players.localPlayer().getTile().getX() < 2708 ?
+                if (clickObject(GameObjectHelper.nameEqualsPredicate("Ropeswing"), "Swing-on", () -> Players.localPlayer().getTile().getX() < 2708 ?
                         WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)) {
                     return true;
                 }
@@ -833,50 +841,49 @@ public class NavigationSpecialCase implements Loggable {
             case SHANTAY_PASS_ENTRANCE:
             case SHANTAY_PASS_EXIT:
                 if(Players.localPlayer().getTile().getY() < 3117){
-                    return clickObject(Filters.Objects.nameEquals("Shantay pass"),"Go-through", () -> SHANTAY_PASS_ENTRANCE.getTile().equals(Players.localPlayer().getTile())
+                    return clickObject(GameObjectHelper.nameEqualsPredicate("Shantay pass"),"Go-through", () -> SHANTAY_PASS_ENTRANCE.getTile().equals(Players.localPlayer().getTile())
                             ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) && WaitFor.milliseconds(600,1800) != null;
                 } else if(Inventory.count(1854) == 0){
-                    NPCInteraction.talkTo(Filters.NPCs.actionsEquals("Buy-pass"),new String[]{"Buy-pass"}, new String[]{});
+                    NPCInteraction.talkTo(NPCHelper.actionsEqualsPredicate("Buy-pass"),new String[]{"Buy-pass"}, new String[]{});
                 }
-                return Inventory.count(1854) > 0 && clickObject(Filters.Objects.nameEquals("Shantay pass"),"Go-through", () -> {
+                return Inventory.count(1854) > 0 && clickObject(GameObjectHelper.nameEqualsPredicate("Shantay pass"),"Go-through", () -> {
                     DoomsToggle.handleToggle();
                     return SHANTAY_PASS_EXIT.getTile().equals(Players.localPlayer().getTile())
                             ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE;
                 }) && WaitFor.milliseconds(600,1800) != null;
 
             case PATERDOMUS_EAST_ENTRANCE:
-                return clickObject(Filters.Objects.nameEquals("Trapdoor"), new String[]{"Open","Climb-down"}, () -> PATERDOMUS_EAST_ENTRANCE.getTile().equals(Players.localPlayer().getTile())
+                return clickObject(GameObjectHelper.nameEqualsPredicate("Trapdoor"), new String[]{"Open","Climb-down"}, () -> PATERDOMUS_EAST_ENTRANCE.getTile().equals(Players.localPlayer().getTile())
                     ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) && WaitFor.milliseconds(600,1800) != null;
             case PATERDOMUS_EAST_EXIT:
-                return clickObject(Filters.Objects.nameEquals("Holy barrier"), "Pass-through", () -> PATERDOMUS_EAST_EXIT.getTile().equals(Players.localPlayer().getTile())
+                return clickObject(GameObjectHelper.nameEqualsPredicate("Holy barrier"), "Pass-through", () -> PATERDOMUS_EAST_EXIT.getTile().equals(Players.localPlayer().getTile())
                     ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) && WaitFor.milliseconds(600,1800) != null;
 
             case SWAMP_BOATY:
-                return InteractionHelper.click(InteractionHelper.getGameObject(Filters.Objects.nameEquals("Swamp Boaty")), "Quick-board") && WaitFor.condition( 15000,  () -> SWAMP_BOATY.getTile().distance(Players.localPlayer().getTile()) < 5
+                return InteractionHelper.click(InteractionHelper.getGameObject(GameObjectHelper.nameEqualsPredicate("Swamp Boaty")), "Quick-board") && WaitFor.condition( 15000,  () -> SWAMP_BOATY.getTile().distance(Players.localPlayer().getTile()) < 5
                     ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) != null && WaitFor.milliseconds(600,1800) != null;
             case SWAMP_BOATY_MORTTON:
-                return InteractionHelper.click(InteractionHelper.getGameObject(Filters.Objects.nameEquals("Swamp Boaty")), "Board") && WaitFor.condition( 15000,  () -> SWAMP_BOATY_MORTTON.getTile().distance(Players.localPlayer().getTile()) < 5
+                return InteractionHelper.click(InteractionHelper.getGameObject(GameObjectHelper.nameEqualsPredicate("Swamp Boaty")), "Board") && WaitFor.condition( 15000,  () -> SWAMP_BOATY_MORTTON.getTile().distance(Players.localPlayer().getTile()) < 5
                     ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) != null && WaitFor.milliseconds(600,1800) != null;
 
             case BRINE_RAT_CAVE_TREE:
             case BRINE_RAT_CAVE_ENTER:
                 if(Players.localPlayer().getTile().distance(BRINE_RAT_CAVE_TREE.getTile()) >= 2){
-                    if(Walking.blindWalkTo(BRINE_RAT_CAVE_TREE.getTile())){
-                        WaitFor.condition(6000,
-                            () -> Players.localPlayer().getTile().distance(BRINE_RAT_CAVE_TREE.getTile()) <= 2 ?
-                                WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE);
-                    }
+                    Walking.setWalkFlag(BRINE_RAT_CAVE_TREE.getTile());
+                    WaitFor.condition(6000,
+                        () -> Players.localPlayer().getTile().distance(BRINE_RAT_CAVE_TREE.getTile()) <= 2 ?
+                            WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE);
                 }
                 return ItemHelper.click("Spade","Dig") && WaitFor.condition(10000,
                     () -> Players.localPlayer().getTile().distance(BRINE_RAT_CAVE_ENTER.getTile()) < 5 ?
                         WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) == WaitFor.Return.SUCCESS && WaitFor.milliseconds(1500, 2500) != null;
 
             case FERRY_AL_KHARID_TO_UNKAH:
-                return NPCInteraction.clickNpc(Filters.NPCs.nameEquals("Ferryman Sathwood"),"Ferry") &&
+                return NPCInteraction.clickNpc(NPCHelper.nameEqualsPredicate("Ferryman Sathwood"),"Ferry") &&
                     WaitFor.condition(15000,() -> FERRY_AL_KHARID_TO_UNKAH.getTile().distance(Players.localPlayer().getTile()) < 10
                         ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) == WaitFor.Return.SUCCESS;
             case FERRY_UNKAH_TO_AL_KHARID:
-                return NPCInteraction.clickNpc(Filters.NPCs.nameEquals("Ferryman Nathwood"),"Ferry") &&
+                return NPCInteraction.clickNpc(NPCHelper.nameEqualsPredicate("Ferryman Nathwood"),"Ferry") &&
                     WaitFor.condition(15000,() -> FERRY_UNKAH_TO_AL_KHARID.getTile().distance(Players.localPlayer().getTile()) < 10
                         ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) == WaitFor.Return.SUCCESS;
 
@@ -884,12 +891,12 @@ public class NavigationSpecialCase implements Loggable {
             case UNKAH_SHANTAY_PASS_EAST_ENTRANCE:
             case UNKAH_SHANTAY_PASS_EAST_EXIT:
                 if(Players.localPlayer().getTile().getX() > 3195){
-                    return clickObject(Filters.Objects.nameEquals("Shantay pass"),"Go-through", () -> UNKAH_SHANTAY_PASS_EAST_ENTRANCE.getTile().equals(Players.localPlayer().getTile())
+                    return clickObject(GameObjectHelper.nameEqualsPredicate("Shantay pass"),"Go-through", () -> UNKAH_SHANTAY_PASS_EAST_ENTRANCE.getTile().equals(Players.localPlayer().getTile())
                         ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) && WaitFor.milliseconds(600,1800) != null;
                 } else if(Inventory.count(1854) == 0){
-                    NPCInteraction.talkTo(Filters.NPCs.actionsEquals("Buy-pass"),new String[]{"Buy-pass"}, new String[]{});
+                    NPCInteraction.talkTo(NPCHelper.actionsEqualsPredicate("Buy-pass"),new String[]{"Buy-pass"}, new String[]{});
                 }
-                return Inventory.count(1854) > 0 && clickObject(Filters.Objects.nameEquals("Shantay pass"),"Go-through", () -> {
+                return Inventory.count(1854) > 0 && clickObject(GameObjectHelper.nameEqualsPredicate("Shantay pass"),"Go-through", () -> {
                     DoomsToggle.handleToggle();
                     return UNKAH_SHANTAY_PASS_EAST_EXIT.getTile().equals(Players.localPlayer().getTile())
                         ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE;
@@ -897,12 +904,12 @@ public class NavigationSpecialCase implements Loggable {
             case UNKAH_SHANTAY_PASS_SOUTH_ENTRANCE:
             case UNKAH_SHANTAY_PASS_SOUTH_EXIT:
                 if(Players.localPlayer().getTile().getX() > 3195){
-                    return clickObject(Filters.Objects.nameEquals("Shantay pass"),"Go-through", () -> UNKAH_SHANTAY_PASS_SOUTH_ENTRANCE.getTile().equals(Players.localPlayer().getTile())
+                    return clickObject(GameObjectHelper.nameEqualsPredicate("Shantay pass"),"Go-through", () -> UNKAH_SHANTAY_PASS_SOUTH_ENTRANCE.getTile().equals(Players.localPlayer().getTile())
                         ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) && WaitFor.milliseconds(600,1800) != null;
                 } else if(Inventory.count(1854) == 0){
-                    NPCInteraction.talkTo(Filters.NPCs.actionsEquals("Buy-pass"),new String[]{"Buy-pass"}, new String[]{});
+                    NPCInteraction.talkTo(NPCHelper.actionsEqualsPredicate("Buy-pass"),new String[]{"Buy-pass"}, new String[]{});
                 }
-                return Inventory.count(1854) > 0 && clickObject(Filters.Objects.nameEquals("Shantay pass"),"Go-through", () -> {
+                return Inventory.count(1854) > 0 && clickObject(GameObjectHelper.nameEqualsPredicate("Shantay pass"),"Go-through", () -> {
                     DoomsToggle.handleToggle();
                     return UNKAH_SHANTAY_PASS_SOUTH_EXIT.getTile().equals(Players.localPlayer().getTile())
                         ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE;
@@ -913,9 +920,9 @@ public class NavigationSpecialCase implements Loggable {
     }
     public static boolean handleZeahBoats(String locationOption){
         String travelOption = "Travel";
-        NPC[] npcs = NPCs.find("Veos","Captain Magoro");
-        if(npcs.length > 0){
-            String[] actions = npcs[0].getActions();
+        NPC npc = NPCs.closest((n) -> StringHelper.nameContains(n.getName(), "Veos", "Captain Magoro"));
+        if(npc != null){
+            String[] actions = npc.getActions();
             if(actions != null){
                 List<String> asList = Arrays.asList(actions);
                 if(asList.stream().anyMatch(a -> a.equals("Port Sarim") || a.equals("Land's End"))){
@@ -931,7 +938,7 @@ public class NavigationSpecialCase implements Loggable {
                 }
             }
         }
-        if(NPCInteraction.clickNpc(Filters.NPCs.nameEquals("Veos", "Captain Magoro"),new String[]{travelOption})){
+        if(NPCInteraction.clickNpc(NPCHelper.nameEqualsPredicate("Veos", "Captain Magoro"),new String[]{travelOption})){
             Tile current = Players.localPlayer().getTile();
             if (WaitFor.condition(8000, () -> (ShipUtils.isOnShip() || Players.localPlayer().getTile().distance(current) > 20) ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) != WaitFor.Return.SUCCESS) {
                 return false;
@@ -944,7 +951,7 @@ public class NavigationSpecialCase implements Loggable {
 
     private static boolean handleFirstTripToZeah(String locationOption){
         getInstance().log("First trip to zeah");
-        if(NPCInteraction.talkTo(Filters.NPCs.nameEquals("Veos", "Captain Magoro"), new String[]{"Talk-to"}, new String[]{
+        if(NPCInteraction.talkTo(NPCHelper.nameEqualsPredicate("Veos", "Captain Magoro"), new String[]{"Talk-to"}, new String[]{
                 locationOption,"Can you take me somewhere?","That's great, can you take me there please?","Can you take me to Great Kourend?"})) {
             Tile current = Players.localPlayer().getTile();
             if (WaitFor.condition(8000, () -> (ShipUtils.isOnShip() || Players.localPlayer().getTile().distance(current) > 20) ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) != WaitFor.Return.SUCCESS) {
@@ -957,7 +964,7 @@ public class NavigationSpecialCase implements Loggable {
     }
 
     public static boolean handleShip(String... targetLocation){
-        if (NPCInteraction.clickNpc(Filters.NPCs.actionsContains(targetLocation), targetLocation)
+        if (NPCInteraction.clickNpc(NPCHelper.actionsContainsPredicate(targetLocation), targetLocation)
                 && WaitFor.condition(10000, () -> ShipUtils.isOnShip() ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) == WaitFor.Return.SUCCESS){
             WaitFor.milliseconds(1800, 2800);
             return true;
@@ -971,7 +978,7 @@ public class NavigationSpecialCase implements Loggable {
         boolean pirateTreasureComplete = PlayerSettings.getConfig(71) >= 4;
         if(pirateTreasureComplete){
             return handleShip("Pay-fare","Pay-Fare");
-        } else if (NPCInteraction.talkTo(Filters.NPCs.actionsContains(options), options, chat)
+        } else if (NPCInteraction.talkTo(NPCHelper.actionsContainsPredicate(options), options, chat)
                 && WaitFor.condition(10000, () -> ShipUtils.isOnShip() ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) == WaitFor.Return.SUCCESS){
             WaitFor.milliseconds(1800, 2800);
             return true;
@@ -980,13 +987,14 @@ public class NavigationSpecialCase implements Loggable {
     }
 
     public static boolean walkToObject(GameObject object) {
-        if (!object.isOnScreen() || !object.isInteractable()){
-            Walking.blindWalkTo(object);
-            if (WaitFor.isOnScreenAndInteractable(object) != WaitFor.Return.SUCCESS){
-                return false;
-            }
-        }
-        return object.isOnScreen() && object.isInteractable();
+//        if (!object.isOnScreen() || !object.isInteractable()){
+//            Walking.setWalkFlag(object.getTile());
+//            if (WaitFor.isOnScreenAndInteractable(object) != WaitFor.Return.SUCCESS){
+//                return false;
+//            }
+//        }
+//        return object.isOnScreen() && object.isInteractable();
+        return object.isInteractable();
     }
 
     public static boolean clickObject(GameObject object, String action, WaitFor.Condition condition) {
@@ -998,7 +1006,7 @@ public class NavigationSpecialCase implements Loggable {
     }
 
     public static boolean clickObject(Predicate<GameObject> filter, String[] action, WaitFor.Condition condition){
-        GameObject[] objects = Objects.findNearest(15, filter);
+        GameObject[] objects = GameObjectHelper.findClosest(15, filter);
         if (objects.length == 0){
             return false;
         }
@@ -1007,17 +1015,17 @@ public class NavigationSpecialCase implements Loggable {
 
 
     private static boolean handleFishingPlatform(){
-        NPC[] jeb = NPCs.find(Filters.NPCs.nameEquals("Jeb").and(Filters.NPCs.actionsEquals("Travel")));
-        if(jeb.length > 0){
-            return InteractionHelper.click(jeb[0],"Travel") &&
-                    WaitFor.condition(20000, () -> NPCChat.getMessage() != null ?
+        NPC jeb = NPCs.closest(NPCHelper.nameEqualsPredicate("Jeb").and(NPCHelper.actionsEqualsPredicate("Travel")));
+        if(jeb != null){
+            return InteractionHelper.click(jeb,"Travel") &&
+                    WaitFor.condition(20000, () -> Dialogues.getNPCDialogue() != null ?
                                     WaitFor.Return.SUCCESS :
                                     WaitFor.Return.IGNORE
 
                                      ) == WaitFor.Return.SUCCESS;
         } else {
-            return NPCInteraction.clickNpc(Filters.NPCs.nameEquals("Holgart"),new String[]{"Travel"}) &&
-                    WaitFor.condition(20000, () -> NPCChat.getMessage() != null ?
+            return NPCInteraction.clickNpc(NPCHelper.nameEqualsPredicate("Holgart"),new String[]{"Travel"}) &&
+                    WaitFor.condition(20000, () -> Dialogues.getNPCDialogue() != null ?
                                     WaitFor.Return.SUCCESS :
                                     WaitFor.Return.IGNORE
 
@@ -1027,7 +1035,7 @@ public class NavigationSpecialCase implements Loggable {
 
     private static boolean takeFossilIslandBoat(String destination){
         if(NPCInteraction.isConversationWindowUp() || clickObject(
-                Filters.Objects.nameEquals("Rowboat"),
+                GameObjectHelper.nameEqualsPredicate("Rowboat"),
                 "Travel",
                 () -> NPCInteraction.isConversationWindowUp() ?
                         WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE)){
@@ -1040,7 +1048,7 @@ public class NavigationSpecialCase implements Loggable {
     }
 
     private static boolean handleCarpetRide(String carpetDestination){
-        if (NPCInteraction.talkTo(Filters.NPCs.actionsContains("Travel"), new String[]{"Travel"}, new String[]{carpetDestination})){
+        if (NPCInteraction.talkTo(NPCHelper.actionsContainsPredicate("Travel"), new String[]{"Travel"}, new String[]{carpetDestination})){
             WaitFor.milliseconds(3500, 5000); //wait for board carpet before starting moving condition
             WaitFor.condition(30000, WaitFor.getNotMovingCondition());
             WaitFor.milliseconds(2250, 3250);

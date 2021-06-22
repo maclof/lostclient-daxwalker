@@ -1,5 +1,9 @@
 package org.lostclient.api.wrappers.walking.dax_api.walker.utils.camera;
 
+import org.lostclient.api.interfaces.Locatable;
+import org.lostclient.api.wrappers.camera.Camera;
+import org.lostclient.api.wrappers.input.Mouse;
+
 import java.awt.*;
 
 import static org.lostclient.api.wrappers.walking.dax_api.walker.utils.camera.CameraCalculations.distanceBetweenTwoAngles;
@@ -15,35 +19,34 @@ public class DaxCamera {
     }
 
     public static void positionCamera(int angle, int rotation){
-        if (!CameraAction.isMiddleMouseCameraOn()){
-            return;
-        }
-        int currentAngle = Camera.getCameraAngle(), currentRotation = Camera.getCameraRotation();
-
-        int cameraAngleDifference = angle - currentAngle;
-        int cameraRotationDifference =  distanceBetweenTwoAngles(currentRotation, rotation), rotationDirection;
-        if (CameraCalculations.normalizeRotation(currentRotation + cameraRotationDifference) == rotation){
-            rotationDirection = -1; //TURN RIGHT
-        } else {
-            rotationDirection = 1;
-        }
-
-        if (!getGameScreen().contains(Mouse.getPos())){
-            Mouse.moveBox(Screen.getViewport());
-        }
-
-        Point startingPoint = Mouse.getPos();
-        Point endingPoint = new Point(startingPoint);
-
-        int dx = rotationDirection * cameraRotationDifference;
-        int dy = cameraAngleDifference;
-
-        endingPoint.translate(rotationToPixel(dx), angleToPixel(dy));
-
-        Mouse.sendPress(startingPoint, 2);
-        Mouse.move(endingPoint);
-        Mouse.sendRelease(endingPoint, 2);
-
+//        if (!CameraAction.isMiddleMouseCameraOn()){
+//            return;
+//        }
+//        int currentAngle = Camera.getAngle(), currentRotation = Camera.getCameraYaw();
+//
+//        int cameraAngleDifference = angle - currentAngle;
+//        int cameraRotationDifference =  distanceBetweenTwoAngles(currentRotation, rotation), rotationDirection;
+//        if (CameraCalculations.normalizeRotation(currentRotation + cameraRotationDifference) == rotation){
+//            rotationDirection = -1; //TURN RIGHT
+//        } else {
+//            rotationDirection = 1;
+//        }
+//
+//        if (!getGameScreen().contains(Mouse.getMousePosition())){
+//            Mouse.moveBox(Screen.getViewport());
+//        }
+//
+//        Point startingPoint = Mouse.getMousePosition();
+//        Point endingPoint = new Point(startingPoint);
+//
+//        int dx = rotationDirection * cameraRotationDifference;
+//        int dy = cameraAngleDifference;
+//
+//        endingPoint.translate(rotationToPixel(dx), angleToPixel(dy));
+//
+//        Mouse.sendPress(startingPoint, 2);
+//        Mouse.move(endingPoint);
+//        Mouse.sendRelease(endingPoint, 2);
     }
 
     public static Rectangle getGameScreen(){
@@ -59,6 +62,9 @@ public class DaxCamera {
     }
 
     private static Point generatePoint(Rectangle rectangle){
-        return new Point(Calculations.random(rectangle.x, rectangle.x + rectangle.width), Calculations.random(rectangle.y, rectangle.y + rectangle.height));
+        return new Point(
+                org.lostclient.api.utilities.math.Calculations.random(rectangle.x, rectangle.x + rectangle.width),
+                org.lostclient.api.utilities.math.Calculations.random(rectangle.y, rectangle.y + rectangle.height)
+        );
     }
 }

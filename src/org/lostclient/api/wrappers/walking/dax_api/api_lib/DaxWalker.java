@@ -82,7 +82,7 @@ public class DaxWalker implements Loggable {
 		    return false;
 	    }
 
-	    return WalkerEngine.getInstance().walkPath(pathResult.toTilePath(), getGlobalWalkingCondition().combine(walkingCondition));
+	    return WalkerEngine.getInstance().walkPath(pathResult.toTilePath(), getGlobalWalkingCondition().and(walkingCondition));
     }
 
     public static boolean walkToBank() {
@@ -118,7 +118,7 @@ public class DaxWalker implements Loggable {
             getInstance().log(Level.WARNING, "No valid path found");
             return false;
         }
-        return WalkerEngine.getInstance().walkPath(pathResult.toTilePath(), getGlobalWalkingCondition().combine(walkingCondition));
+        return WalkerEngine.getInstance().walkPath(pathResult.toTilePath(), getGlobalWalkingCondition().and(walkingCondition));
     }
 
     private List<PathRequestPair> getPathTeleports(Tile start) {

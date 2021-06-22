@@ -6,6 +6,7 @@ import org.lostclient.api.accessor.Players;
 import org.lostclient.api.containers.inventory.Inventory;
 import org.lostclient.api.interfaces.Interactable;
 import org.lostclient.api.utilities.MethodProvider;
+import org.lostclient.api.wrappers.input.mouse.Menu;
 import org.lostclient.api.wrappers.item.Item;
 import org.lostclient.api.wrappers.map.Tile;
 import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.InterfaceHelper;
@@ -15,6 +16,7 @@ import org.lostclient.api.wrappers.widgets.Widgets;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 
@@ -128,7 +130,8 @@ public class MasterScrollBook {
 	//Removes the default left click teleport option.
 	public static boolean removeDefault(){
 		Item[] book = getBook();
-		if(Game.isUptext("->")){
+		String toolTip = Menu.getToolTip();
+		if(toolTip != null && toolTip.contains("->")){
 			resetUptext();
 		}
 		return book.length > 0 && click(book[0],"Remove default") && waitForOptions() && NPCChat.selectOption("Yes", true);
@@ -162,7 +165,8 @@ public class MasterScrollBook {
 	//Opens the master scroll book interface.
 	public static boolean openBook(){
 		Item[] book = getBook();
-		if(Game.isUptext("->")){
+		String toolTip = Menu.getToolTip();
+		if(toolTip != null && toolTip.contains("->")){
 			resetUptext();
 		}
 		return book.length > 0 && click(book[0],"Open") && waitForBookToOpen();
@@ -200,7 +204,7 @@ public class MasterScrollBook {
 		WidgetChild master = Widgets.getWidgetChild(SELECT_OPTION_MASTER,SELECT_OPTION_CHILD);
 		if(master == null)
 			return null;
-		WidgetChild[] ifaces = master.getChildren();
+		List<WidgetChild> ifaces = master.getChildren();
 		if(ifaces == null)
 			return null;
 		for(WidgetChild iface:ifaces){
@@ -215,7 +219,7 @@ public class MasterScrollBook {
 	//Resets uptext.
 	private static void resetUptext(){
 		WidgetChild master = Widgets.getWidgetChild(GAMETABS_INTERFACE_MASTER);
-		WidgetChild[] children = master.getChildren();
+		List<WidgetChild> children = master.getChildren();
 		if(children == null)
 			return;
 		WidgetChild inventory = null;
@@ -240,7 +244,8 @@ public class MasterScrollBook {
 	}
 	
 	private static boolean click(WidgetChild widgetChild, String action){
-		if(Game.isUptext("->") && !action.contains("->")){
+		String toolTip = Menu.getToolTip();
+		if(toolTip != null && toolTip.contains("->") && !action.contains("->")){
 			resetUptext();
 		}
 		return widgetChild.interact(action);

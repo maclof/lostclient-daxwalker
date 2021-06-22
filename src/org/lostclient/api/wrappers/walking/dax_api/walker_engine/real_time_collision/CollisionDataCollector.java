@@ -1,6 +1,7 @@
 package org.lostclient.api.wrappers.walking.dax_api.walker_engine.real_time_collision;
 
 import org.lostclient.api.accessor.Players;
+import org.lostclient.api.wrappers.input.mouse.Menu;
 import org.lostclient.api.wrappers.map.Tile;
 
 public class CollisionDataCollector {
