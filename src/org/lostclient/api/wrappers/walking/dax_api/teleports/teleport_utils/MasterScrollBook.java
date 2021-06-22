@@ -8,7 +8,7 @@ import org.lostclient.api.interfaces.Interactable;
 import org.lostclient.api.utilities.MethodProvider;
 import org.lostclient.api.wrappers.input.mouse.Menu;
 import org.lostclient.api.wrappers.item.Item;
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.InterfaceHelper;
 import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.StringHelper;
 import org.lostclient.api.wrappers.widgets.WidgetChild;
@@ -47,8 +47,8 @@ public class MasterScrollBook {
 		
 		private int varbit;
 		private String name;
-		private Tile destination;
-		Teleports(int varbit, String name, Tile destination){
+		private RSTile destination;
+		Teleports(int varbit, String name, RSTile destination){
 			this.varbit = varbit;
 			this.name = name;
 			this.destination = destination;
@@ -65,7 +65,7 @@ public class MasterScrollBook {
 		}
 		
 		//Returns the destination that the teleport will take you to.
-		public Tile getDestination(){
+		public RSTile getDestination(){
 			return destination;
 		}
 		
@@ -74,7 +74,7 @@ public class MasterScrollBook {
 			if(Dialogues.getOptions().length > 0){
 				String text = getDefaultTeleportText();
 				if(text.contains(this.getName())){
-					return NPCChat.selectOption("Yes", true);
+					return Dialogues.clickOption("Yes");
 				}
 			}
 			if(!isOpen()){
@@ -83,7 +83,7 @@ public class MasterScrollBook {
 			WidgetChild target = getInterface(this);
 			if(target == null)
 				return false;
-			return click(target,"Set as default") && waitForOptions() && NPCChat.selectOption("Yes", true);
+			return target.interact("Set as default") && waitForOptions() && Dialogues.clickOption("Yes");
 			
 		}
 		
@@ -98,7 +98,7 @@ public class MasterScrollBook {
 			if(!isOpen() && !openBook())
 				return false;
 			WidgetChild target = getInterface(this);
-			return target != null && click(target, "Activate") && waitTillAtDestination(this);
+			return target != null && target.interact("Activate") && waitTillAtDestination(this);
 		}
 		
 	}
@@ -134,7 +134,7 @@ public class MasterScrollBook {
 		if(toolTip != null && toolTip.contains("->")){
 			resetUptext();
 		}
-		return book.length > 0 && click(book[0],"Remove default") && waitForOptions() && NPCChat.selectOption("Yes", true);
+		return book.length > 0 && click(book[0],"Remove default") && waitForOptions() && Dialogues.clickOption("Yes");
 	}
 	
 	//Caches the index and returns the WidgetChild associated with the selected teleport.
@@ -243,12 +243,12 @@ public class MasterScrollBook {
 		}, 8000);
 	}
 	
-	private static boolean click(WidgetChild widgetChild, String action){
+	private static boolean click(Item item, String action){
 		String toolTip = Menu.getToolTip();
 		if(toolTip != null && toolTip.contains("->") && !action.contains("->")){
 			resetUptext();
 		}
-		return widgetChild.interact(action);
+		return item.interact(action);
 	}
 	
 	

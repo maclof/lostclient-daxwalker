@@ -1,7 +1,7 @@
 package org.lostclient.api.wrappers.walking.dax_api.walker;
 
 import org.lostclient.api.Client;
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 import org.lostclient.api.wrappers.walking.dax_api.walker.handlers.move_task.impl.DefaultObjectHandler;
 import org.lostclient.api.wrappers.walking.dax_api.walker.handlers.move_task.impl.DefaultWalkHandler;
 import org.lostclient.api.wrappers.walking.dax_api.walker.handlers.passive_action.PassiveAction;
@@ -33,7 +33,7 @@ public class DaxWalkerEngine implements DaxLogger {
         return passiveActions;
     }
 
-    public boolean walkPath(List<Tile> path) {
+    public boolean walkPath(List<RSTile> path) {
         int failAttempts = 0;
 
         while (failAttempts < 3) {
@@ -50,13 +50,13 @@ public class DaxWalkerEngine implements DaxLogger {
         return false;
     }
 
-    private boolean reachedEnd(List<Tile> path) {
+    private boolean reachedEnd(List<RSTile> path) {
         if (path == null || path.size() == 0) return true;
-        Tile tile = new Tile(Client.getClient().getDestinationX(), Client.getClient().getDestinationY(), Client.getClient().getClient_plane());
+        RSTile tile = new RSTile(Client.getClient().getDestinationX(), Client.getClient().getDestinationY(), Client.getClient().getClient_plane());
         return tile != null && tile.equals(path.get(path.size() - 1));
     }
 
-    private MoveActionResult walkNext(List<Tile> path) {
+    private MoveActionResult walkNext(List<RSTile> path) {
         MoveTask moveTask = determineNextAction(path);
         debug("Move task: " + moveTask);
 
@@ -82,13 +82,13 @@ public class DaxWalkerEngine implements DaxLogger {
         }
     }
 
-    private MoveTask determineNextAction(List<Tile> path) {
-        Tile furthestInteractable = PathUtils.getFurthestReachableTileInMinimap(path);
+    private MoveTask determineNextAction(List<RSTile> path) {
+        RSTile furthestInteractable = PathUtils.getFurthestReachableTileInMinimap(path);
         if (furthestInteractable == null) {
             return new MoveTask(Situation.PATH_TOO_FAR, null, null);
         }
 
-        Tile next;
+        RSTile next;
         try {
             next = PathUtils.getNextTileInPath(furthestInteractable, path);
         } catch (PathUtils.NotInPathException e) {

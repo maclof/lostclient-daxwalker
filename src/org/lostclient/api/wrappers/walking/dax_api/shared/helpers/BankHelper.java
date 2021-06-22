@@ -7,7 +7,7 @@ import org.lostclient.api.containers.bank.Bank;
 import org.lostclient.api.interfaces.Locatable;
 import org.lostclient.api.utilities.MethodProvider;
 import org.lostclient.api.wrappers.interactives.GameObject;
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.WaitFor;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.interaction_handling.InteractionHelper;
 
@@ -43,7 +43,7 @@ public class BankHelper {
 
     public static boolean isInBank(Locatable positionable){
         GameObject bankObject = GameObjects.closest((o) -> o.distance() <= 15 && BANK_OBJECT_PREDICATE.test(o));
-        HashSet<Tile> building = getBuilding(bankObject);
+        HashSet<RSTile> building = getBuilding(bankObject);
         return building.contains(positionable.getTile()) || (building.size() == 0 && positionable.getTile().distance(bankObject) < 5);
     }
 
@@ -67,14 +67,14 @@ public class BankHelper {
         return InteractionHelper.click(object, "Bank") && waitForBankScreen(object);
     }
 
-    public static HashSet<Tile> getBuilding(Locatable positionable){
+    public static HashSet<RSTile> getBuilding(Locatable positionable){
         MethodProvider.logDebug("Call to Client.getClient().getTiles_renderFlags()");
         return computeBuilding(positionable, Client.getClient().getTiles_renderFlags(), new HashSet<>());
     }
 
-    private static HashSet<Tile> computeBuilding(Locatable positionable, byte[][][] sceneFlags, HashSet<Tile> tiles){
+    private static HashSet<RSTile> computeBuilding(Locatable positionable, byte[][][] sceneFlags, HashSet<RSTile> tiles){
         try {
-            Tile local = positionable.getTile();
+            RSTile local = RSTile.fromTile(positionable.getTile());
             int localX = local.getX(), localY = local.getY(), localZ = local.getZ();
             if (localX < 0 || localY < 0 || localZ < 0){
                 return tiles;
@@ -89,17 +89,17 @@ public class BankHelper {
 //            if (!tiles.add(local.toWorldTile())){ //Already computed
 //                return tiles;
 //            }
-//            computeBuilding(new Tile(localX, localY + 1, localZ, Tile.TYPES.LOCAL).toWorldTile(), sceneFlags, tiles);
-//            computeBuilding(new Tile(localX + 1, localY, localZ, Tile.TYPES.LOCAL).toWorldTile(), sceneFlags, tiles);
-//            computeBuilding(new Tile(localX, localY - 1, localZ, Tile.TYPES.LOCAL).toWorldTile(), sceneFlags, tiles);
-//            computeBuilding(new Tile(localX - 1, localY, localZ, Tile.TYPES.LOCAL).toWorldTile(), sceneFlags, tiles);
+//            computeBuilding(new RSTile(localX, localY + 1, localZ, Tile.TYPES.LOCAL).toWorldTile(), sceneFlags, tiles);
+//            computeBuilding(new RSTile(localX + 1, localY, localZ, Tile.TYPES.LOCAL).toWorldTile(), sceneFlags, tiles);
+//            computeBuilding(new RSTile(localX, localY - 1, localZ, Tile.TYPES.LOCAL).toWorldTile(), sceneFlags, tiles);
+//            computeBuilding(new RSTile(localX - 1, localY, localZ, Tile.TYPES.LOCAL).toWorldTile(), sceneFlags, tiles);
         } catch (ArrayIndexOutOfBoundsException e) {
 
         }
         return tiles;
     }
 
-    private static boolean isInBuilding(Tile localTile, byte[][][] sceneFlags) {
+    private static boolean isInBuilding(RSTile localTile, byte[][][] sceneFlags) {
         return !(sceneFlags.length <= localTile.getZ()
                     || sceneFlags[localTile.getZ()].length <= localTile.getX()
                     || sceneFlags[localTile.getZ()][localTile.getX()].length <= localTile.getY())

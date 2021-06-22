@@ -1,14 +1,14 @@
 package org.lostclient.api.wrappers.walking.dax_api.walker.models;
 
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 import org.lostclient.api.wrappers.walking.dax_api.walker.models.enums.Situation;
 
 public class MoveTask {
 
     private Situation situation;
-    private Tile destination, next;
+    private RSTile destination, next;
 
-    public MoveTask(Situation situation, Tile destination, Tile next) {
+    public MoveTask(Situation situation, RSTile destination, RSTile next) {
         this.situation = situation;
         this.destination = destination;
         this.next = next;
@@ -20,17 +20,17 @@ public class MoveTask {
 
     /**
      *
-     * @return Tile we can walk to.
+     * @return RSTile we can walk to.
      */
-    public Tile getDestination() {
+    public RSTile getDestination() {
         return destination;
     }
 
     /**
      *
-     * @return Tile we want to walk to after reaching destination.
+     * @return RSTile we want to walk to after reaching destination.
      */
-    public Tile getNext() {
+    public RSTile getNext() {
         return next;
     }
 

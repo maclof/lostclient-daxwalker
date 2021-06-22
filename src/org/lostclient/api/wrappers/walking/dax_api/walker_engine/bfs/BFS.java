@@ -1,6 +1,6 @@
 package org.lostclient.api.wrappers.walking.dax_api.walker_engine.bfs;
 
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 import org.lostclient.api.wrappers.walking.dax_api.shared.NodeInfo;
 import org.lostclient.api.wrappers.walking.dax_api.shared.PathFindingNode;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.WaitFor;
@@ -14,11 +14,11 @@ public class BFS {
     private static final int DEFAULT_OFFSET = 12;
     public static int OFFSET_SEARCH = DEFAULT_OFFSET;
 
-    public static PathFindingNode bfsClosestToPath(List<Tile> path, PathFindingNode start){
+    public static PathFindingNode bfsClosestToPath(List<RSTile> path, PathFindingNode start){
         return bfsClosestToPath(path, start, -1);
     }
 
-    public static PathFindingNode bfsClosestToPath(List<Tile> path, PathFindingNode start, int limit){
+    public static PathFindingNode bfsClosestToPath(List<RSTile> path, PathFindingNode start, int limit){
         if (path == null || start == null){
             return null;
         }

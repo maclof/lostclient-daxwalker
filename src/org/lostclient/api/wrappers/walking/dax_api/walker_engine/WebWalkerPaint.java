@@ -2,7 +2,7 @@ package org.lostclient.api.wrappers.walking.dax_api.walker_engine;
 
 import org.lostclient.api.accessor.Players;
 import org.lostclient.api.wrappers.camera.Camera;
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 import org.lostclient.api.wrappers.walking.dax_api.shared.NodeInfo;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.local_pathfinding.PathAnalyzer;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.real_time_collision.RealTimeCollisionTile;
@@ -24,7 +24,7 @@ public class WebWalkerPaint {
 
     private final Point mapCenter;
     private final ExecutorService service;
-    private Tile playerPosition;
+    private RSTile playerPosition;
     private int lastChange;
 
 
@@ -59,7 +59,7 @@ public class WebWalkerPaint {
         }
         if (playerPosition == null || !playerPosition.equals(Players.localPlayer().getTile()) || lastChange != RealTimeCollisionTile.getAllInitialized().size()) {
             lastChange = RealTimeCollisionTile.getAllInitialized().size();
-            playerPosition = Players.localPlayer().getTile();
+            playerPosition = RSTile.fromTile(Players.localPlayer().getTile());
             final int playerX = playerPosition.getX(), playerY = playerPosition.getY();
             service.submit(() -> {
                 nonDisplayableMapImageGraphics.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
@@ -69,9 +69,9 @@ public class WebWalkerPaint {
                 nonDisplayableMapImageGraphics.setRenderingHints(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
 
                 int previousLocalX = -1, previousLocalY = -1;
-                List<Tile> path = WalkerEngine.getInstance().getCurrentPath();
+                List<RSTile> path = WalkerEngine.getInstance().getCurrentPath();
                 if (path != null) {
-                    for (Tile node : path) {
+                    for (RSTile node : path) {
                         int relativeX = node.getX() - playerX, relativeY = playerY - node.getY();
                         int localX = (relativeX + REGION_SIZE / 2) * TILE_WIDTH, localY = (relativeY + REGION_SIZE / 2) * TILE_WIDTH;
 

@@ -9,7 +9,6 @@ import org.lostclient.api.wrappers.walking.dax_api.walker.models.DaxLogger;
 import org.lostclient.api.wrappers.walking.dax_api.walker.models.MoveTask;
 import org.lostclient.api.wrappers.walking.dax_api.walker.models.enums.ActionResult;
 import org.lostclient.api.wrappers.walking.dax_api.walker.models.enums.MoveActionResult;
-import org.lostclient.api.wrappers.walking.dax_api.walker.utils.AccurateMouse;
 import org.lostclient.api.wrappers.walking.dax_api.walker.utils.GenericUtil;
 import org.lostclient.api.wrappers.walking.dax_api.walker.utils.path.DaxPathFinder;
 
@@ -28,9 +27,9 @@ public class DefaultObjectHandler implements MoveTaskHandler, DaxLogger {
         log("Starting...");
 
         if (!moveTask.getDestination().isInteractable()) {
-            if (!AccurateMouse.clickMinimap(moveTask.getDestination())) {
-                return MoveActionResult.FAILED;
-            }
+//            if (!AccurateMouse.clickMinimap(moveTask.getDestination())) {
+//                return MoveActionResult.FAILED;
+//            }
 
             if (!waitForConditionOrNoMovement(() -> DaxPathFinder.distance(moveTask.getDestination()) < 6, 15000, passiveActionList).isSuccess()) {
                 log("We did not reach our destination.");
@@ -106,7 +105,9 @@ public class DefaultObjectHandler implements MoveTaskHandler, DaxLogger {
         }
 
         log(String.format("Clicking %s with %s", GenericUtil.getName(object), Arrays.toString(clickActions)));
-        return AccurateMouse.click(object, clickActions);
+
+//        return AccurateMouse.click(object, clickActions);
+        return false;
     }
 
     private Direction getDirection(MoveTask moveTask) {

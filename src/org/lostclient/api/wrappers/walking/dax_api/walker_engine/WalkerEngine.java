@@ -6,10 +6,9 @@ import org.lostclient.api.containers.bank.Bank;
 import org.lostclient.api.utilities.math.Calculations;
 import org.lostclient.api.wrappers.camera.Camera;
 import org.lostclient.api.wrappers.input.Mouse;
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 import org.lostclient.api.wrappers.walking.dax_api.teleports.Teleport;
 import org.lostclient.api.wrappers.walking.dax_api.shared.PathFindingNode;
-import org.lostclient.api.wrappers.walking.dax_api.walker.utils.AccurateMouse;
 import org.lostclient.api.wrappers.walking.dax_api.walker.utils.path.PathUtils;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.bfs.BFS;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.interaction_handling.PathObjectHandler;
@@ -32,7 +31,7 @@ public class WalkerEngine implements Loggable{
     private int attemptsForAction;
     private final int failThreshold;
     private boolean navigating;
-    private List<Tile> currentPath;
+    private List<RSTile> currentPath;
 
     private WalkerEngine(){
         attemptsForAction = 0;
@@ -45,11 +44,11 @@ public class WalkerEngine implements Loggable{
         return walkerEngine != null ? walkerEngine : (walkerEngine = new WalkerEngine());
     }
 
-    public boolean walkPath(List<Tile> path){
+    public boolean walkPath(List<RSTile> path){
         return walkPath(path, null);
     }
 
-    public List<Tile> getCurrentPath() {
+    public List<RSTile> getCurrentPath() {
         return currentPath;
     }
 
@@ -59,7 +58,7 @@ public class WalkerEngine implements Loggable{
      * @param walkingCondition
      * @return
      */
-    public boolean walkPath(List<Tile> path, WalkingCondition walkingCondition){
+    public boolean walkPath(List<RSTile> path, WalkingCondition walkingCondition){
         if (path.size() == 0) {
             log("Path is empty");
             return false;
@@ -106,18 +105,18 @@ public class WalkerEngine implements Loggable{
                 }
 
                 RealTimeCollisionTile currentNode = destinationDetails.getDestination();
-                Tile assumedNext = destinationDetails.getAssumed();
+                RSTile assumedNext = destinationDetails.getAssumed();
 
                 if (destinationDetails.getState() != PathAnalyzer.PathState.FURTHEST_CLICKABLE_TILE) {
                     log(destinationDetails.toString());
                 }
 
                 final RealTimeCollisionTile destination = currentNode;
-                if (!Projection.isInMinimap(Projection.tileToMinimap(new Tile(destination.getX(), destination.getY(), destination.getZ())))) {
-                    log("Closest tile in path is not in minimap: " + destination);
-                    failedAttempt();
-                    continue;
-                }
+//                if (!Projection.isInMinimap(Projection.tileToMinimap(new RSTile(destination.getX(), destination.getY(), destination.getZ())))) {
+//                    log("Closest tile in path is not in minimap: " + destination);
+//                    failedAttempt();
+//                    continue;
+//                }
 
                 CustomConditionContainer conditionContainer = new CustomConditionContainer(walkingCondition);
                 switch (destinationDetails.getState()) {
@@ -152,16 +151,16 @@ public class WalkerEngine implements Loggable{
                         }
                         //DO NOT BREAK OUT
                     case OBJECT_BLOCKING:
-                        Tile walkingTile = Reachable.getBestWalkableTile(destination.getTile(), new Reachable());
-                        if (isDestinationClose(destination) || (walkingTile != null ? AccurateMouse.clickMinimap(walkingTile) : clickMinimap(destination))) {
-                            log("Handling Object...");
-                            if (!PathObjectHandler.handle(destinationDetails, path)) {
-                                failedAttempt();
-                            } else {
-                                successfulAttempt();
-                            }
-                            break;
-                        }
+//                        RSTile walkingTile = Reachable.getBestWalkableTile(destination.getTile(), new Reachable());
+//                        if (isDestinationClose(destination) || (walkingTile != null ? AccurateMouse.clickMinimap(walkingTile) : clickMinimap(destination))) {
+//                            log("Handling Object...");
+//                            if (!PathObjectHandler.handle(destinationDetails, path)) {
+//                                failedAttempt();
+//                            } else {
+//                                successfulAttempt();
+//                            }
+//                            break;
+//                        }
                         break;
 
                     case FURTHEST_CLICKABLE_TILE:
@@ -232,14 +231,14 @@ public class WalkerEngine implements Loggable{
     }
 
     boolean isDestinationClose(PathFindingNode pathFindingNode){
-        final Tile playerPosition = Players.localPlayer().getTile();
-        return new Tile(pathFindingNode.getX(), pathFindingNode.getY(), pathFindingNode.getZ()).isInteractable()
-                && playerPosition.distance(new Tile(pathFindingNode.getX(), pathFindingNode.getY(), pathFindingNode.getZ())) <= 12
+        final RSTile playerPosition = RSTile.fromTile(Players.localPlayer().getTile());
+        return new RSTile(pathFindingNode.getX(), pathFindingNode.getY(), pathFindingNode.getZ()).isInteractable()
+                && playerPosition.distance(new RSTile(pathFindingNode.getX(), pathFindingNode.getY(), pathFindingNode.getZ())) <= 12
                 && (BFS.isReachable(RealTimeCollisionTile.get(playerPosition.getX(), playerPosition.getY(), playerPosition.getZ()), RealTimeCollisionTile.get(pathFindingNode.getX(), pathFindingNode.getY(), pathFindingNode.getZ()), 200));
     }
 
     public boolean clickMinimap(PathFindingNode pathFindingNode){
-        final Tile playerPosition = Players.localPlayer().getTile();
+        final RSTile playerPosition = RSTile.fromTile(Players.localPlayer().getTile());
         if (playerPosition.distance(pathFindingNode.getTile()) <= 1){
             return true;
         }
@@ -251,15 +250,16 @@ public class WalkerEngine implements Loggable{
         }
 
         log("Randomize(" + pathFindingNode.getX() + "," + pathFindingNode.getY() + "," + pathFindingNode.getZ() + ") -> (" + randomNearby.getX() + "," + randomNearby.getY() + "," + randomNearby.getZ() + ")");
-        return AccurateMouse.clickMinimap(new Tile(randomNearby.getX(), randomNearby.getY(), randomNearby.getZ())) || AccurateMouse.clickMinimap(new Tile(pathFindingNode.getX(), pathFindingNode.getY(), pathFindingNode.getZ()));
+//        return AccurateMouse.clickMinimap(new RSTile(randomNearby.getX(), randomNearby.getY(), randomNearby.getZ())) || AccurateMouse.clickMinimap(new RSTile(pathFindingNode.getX(), pathFindingNode.getY(), pathFindingNode.getZ()));
+        return false;
     }
 
     public void hoverMinimap(PathFindingNode pathFindingNode){
-        if (pathFindingNode == null){
-            return;
-        }
-        Point point = Projection.tileToMinimap(new Tile(pathFindingNode.getX(), pathFindingNode.getY(), pathFindingNode.getZ()));
-        Mouse.move(point);
+//        if (pathFindingNode == null){
+//            return;
+//        }
+//        Point point = Projection.tileToMinimap(new RSTile(pathFindingNode.getX(), pathFindingNode.getY(), pathFindingNode.getZ()));
+//        Mouse.move(point);
     }
 
     private boolean resetAttempts(){
@@ -308,9 +308,9 @@ public class WalkerEngine implements Loggable{
         return "Walker Engine";
     }
 
-    private boolean handleTeleports(List<Tile> path) {
-        Tile startPosition = path.get(0);
-        Tile playerPosition = Players.localPlayer().getTile();
+    private boolean handleTeleports(List<RSTile> path) {
+        RSTile startPosition = path.get(0);
+        RSTile playerPosition = RSTile.fromTile(Players.localPlayer().getTile());
         if(startPosition.equals(playerPosition))
             return true;
         if(Bank.isOpen())

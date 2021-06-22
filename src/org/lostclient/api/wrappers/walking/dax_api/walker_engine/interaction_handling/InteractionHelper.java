@@ -15,13 +15,11 @@ import org.lostclient.api.wrappers.interactives.NPC;
 import org.lostclient.api.wrappers.interactives.Player;
 import org.lostclient.api.wrappers.item.GroundItem;
 import org.lostclient.api.wrappers.item.Item;
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 import org.lostclient.api.wrappers.walking.Walking;
-import org.lostclient.api.wrappers.walking.dax_api.walker.utils.AccurateMouse;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.WaitFor;
 
 import java.util.function.Predicate;
-
 
 public class InteractionHelper {
 
@@ -54,7 +52,7 @@ public class InteractionHelper {
             return ((Item) clickable).interact(actions[0]) && (condition == null || WaitFor.condition(Calculations.random(7000, 8000), condition) == WaitFor.Return.SUCCESS);
         }
 
-        Tile position = ((Locatable) clickable).getTile();
+        RSTile position = RSTile.fromTile(((Locatable) clickable).getTile());
 
         if (!isOnScreenAndInteractable(clickable)){
             Walking.setWalkFlag(position);
@@ -78,12 +76,12 @@ public class InteractionHelper {
             return false;
         }
 
-        if (!AccurateMouse.click(clickable, actions)){
-            if (Camera.getAngle() < 90){
-//                Camera.setCameraAngle(Calculations.random(90, 100));
-            }
-            return false;
-        }
+//        if (!AccurateMouse.click(clickable, actions)){
+//            if (Camera.getAngle() < 90){
+////                Camera.setCameraAngle(Calculations.random(90, 100));
+//            }
+//            return false;
+//        }
 
         return condition == null || WaitFor.condition(Calculations.random(7000, 8500), condition) == WaitFor.Return.SUCCESS;
     }
@@ -111,7 +109,7 @@ public class InteractionHelper {
         if (isOnScreenAndInteractable(clickable)){
             return true;
         }
-        Tile tile = ((Locatable) clickable).getTile();
+        RSTile tile = RSTile.fromTile(((Locatable) clickable).getTile());
         Camera.turnTo(tile);
 //        Camera.setCameraAngle(100 - (tile.distance(Players.localPlayer().getTile()) * 4));
         return isOnScreenAndInteractable(clickable);

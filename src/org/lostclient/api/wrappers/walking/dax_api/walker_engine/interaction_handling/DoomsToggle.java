@@ -3,8 +3,10 @@ package org.lostclient.api.wrappers.walking.dax_api.walker_engine.interaction_ha
 import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.InterfaceHelper;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.Loggable;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.WaitFor;
+import org.lostclient.api.wrappers.widgets.WidgetChild;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 public class DoomsToggle implements Loggable {
 
@@ -36,7 +38,7 @@ public class DoomsToggle implements Loggable {
             String[] actions = rsInterface.getActions();
             return actions != null && Arrays.stream(option).anyMatch(s -> Arrays.stream(actions).anyMatch(s1 -> s1.equals(s)));
         }).findAny();
-        optional.ifPresent(rsInterface -> rsInterface.click(option));
+        optional.ifPresent(rsInterface -> rsInterface.interact(option));
         WaitFor.milliseconds(500, 1500);
     }
 

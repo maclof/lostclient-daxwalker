@@ -1,6 +1,6 @@
 package org.lostclient.api.wrappers.walking.dax_api.shared;
 
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 import org.lostclient.api.wrappers.walking.dax_api.shared.jsonSimple.JSONObject;
 import org.lostclient.api.wrappers.walking.dax_api.shared.jsonSimple.JSONValue;
 
@@ -13,7 +13,7 @@ public class GetPathResponseContainer {
     private String response;
     private ArrayList<String> path;
     private PlayerInformation playerInformation;
-    private ArrayList<Tile> TilePath;
+    private ArrayList<RSTile> TilePath;
 
     public static GetPathResponseContainer CLIENT_ERROR = new GetPathResponseContainer(Status.CLIENT_ERROR, "No problem with server. Client issue.", new ArrayList<>(), null, true);
 
@@ -65,7 +65,7 @@ public class GetPathResponseContainer {
         }
     }
 
-    public ArrayList<Tile> getTilePath(){
+    public ArrayList<RSTile> getTilePath(){
         if (TilePath != null){
             return TilePath;
         }
@@ -73,7 +73,7 @@ public class GetPathResponseContainer {
         for (String tile : path){
             String[] coords = tile.split(" ");
             int x = Integer.parseInt(coords[0]), y = Integer.parseInt(coords[1]), z = Integer.parseInt(coords[2]);
-            TilePath.add(new Tile(x, y, z));
+            TilePath.add(new RSTile(x, y, z));
         }
         return TilePath;
     }

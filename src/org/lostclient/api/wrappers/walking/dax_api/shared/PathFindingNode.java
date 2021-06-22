@@ -1,6 +1,6 @@
 package org.lostclient.api.wrappers.walking.dax_api.shared;
 
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -31,8 +31,8 @@ public abstract class PathFindingNode implements Comparable {
         return distance(pathFindingNode);
     }
 
-    public Tile getTile(){
-        return new Tile(getX(), getY(), getZ());
+    public RSTile getTile(){
+        return new RSTile(getX(), getY(), getZ());
     }
 
     @Override

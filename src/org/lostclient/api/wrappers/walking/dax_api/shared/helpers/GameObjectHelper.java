@@ -4,6 +4,7 @@ import org.lostclient.api.accessor.GameObjects;
 import org.lostclient.api.wrappers.interactives.GameObject;
 import org.lostclient.api.wrappers.item.Item;
 import org.lostclient.api.wrappers.map.Area;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -55,6 +56,10 @@ public class GameObjectHelper {
         List<GameObject> gameObjects = GameObjects.all((o) -> o.distance() <= distance && predicate.test(o));
         gameObjects.sort((o1, o2) -> (int)o1.distance() - (int)o2.distance());
         return gameObjects.toArray(GameObject[]::new);
+    }
+
+    public static GameObject[] getAt(RSTile tile) {
+        return GameObjects.all((o) -> o.getTile().equals(tile)).toArray(GameObject[]::new);
     }
 
 

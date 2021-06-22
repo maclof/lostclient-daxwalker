@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import org.lostclient.api.interfaces.Locatable;
 import org.lostclient.api.utilities.MethodProvider;
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 
 public class Point3D {
 
@@ -43,8 +43,8 @@ public class Point3D {
         return null;
 //        return new Locatable() {
 //            @Override
-//            public Tile getAnimablePosition() {
-//                return new Tile(x, y, z);
+//            public RSTile getAnimablePosition() {
+//                return new RSTile(x, y, z);
 //            }
 //
 //            @Override
@@ -53,15 +53,15 @@ public class Point3D {
 //            }
 //
 //            @Override
-//            public Tile getPosition() {
-//                return new Tile(x, y, z);
+//            public RSTile getPosition() {
+//                return new RSTile(x, y, z);
 //            }
 //        };
     }
 
     public static Point3D fromPositionable(Locatable positionable) {
-        Tile Tile = positionable.getTile();
-        return new Point3D(Tile.getX(), Tile.getY(), Tile.getZ());
+        RSTile tile = RSTile.fromTile(positionable.getTile());
+        return new Point3D(tile.getX(), tile.getY(), tile.getZ());
     }
 
 }

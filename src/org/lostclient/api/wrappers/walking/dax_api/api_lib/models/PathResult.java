@@ -2,7 +2,7 @@ package org.lostclient.api.wrappers.walking.dax_api.api_lib.models;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,13 +54,13 @@ public class PathResult {
         this.cost = cost;
     }
 
-    public ArrayList<Tile> toTilePath() {
+    public ArrayList<RSTile> toTilePath() {
         if (getPath() == null) {
             return new ArrayList<>();
         }
-        ArrayList<Tile> path = new ArrayList<>();
+        ArrayList<RSTile> path = new ArrayList<>();
         for (Point3D point3D : getPath()) {
-            path.add(point3D.toPositionable().getTile());
+            path.add(RSTile.fromTile(point3D.toPositionable().getTile()));
         }
         return path;
     }

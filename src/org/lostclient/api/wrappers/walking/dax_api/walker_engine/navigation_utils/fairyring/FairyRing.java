@@ -5,8 +5,10 @@ import org.lostclient.api.accessor.Players;
 import org.lostclient.api.containers.equipment.Equipment;
 import org.lostclient.api.utilities.MethodProvider;
 import org.lostclient.api.wrappers.interactives.GameObject;
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.GameObjectHelper;
 import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.InterfaceHelper;
+import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.ItemHelper;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.WaitFor;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.interaction_handling.InteractionHelper;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.navigation_utils.fairyring.letters.FirstLetter;
@@ -51,7 +53,7 @@ public class FairyRing {
 				return false;
 			}
 		}
-		final Tile myPos = Players.localPlayer().getTile();
+		final RSTile myPos = RSTile.fromTile(Players.localPlayer().getTile());
 		return location.turnTo() && pressTeleport() && MethodProvider.sleepUntil(() -> myPos.distance(Players.localPlayer().getTile()) > 20,8000);
 	}
 
@@ -65,7 +67,7 @@ public class FairyRing {
 	}
 
 	private static boolean takeLastDestination(Locations location){
-		final Tile myPos = Players.localPlayer().getTile();
+		final RSTile myPos = RSTile.fromTile(Players.localPlayer().getTile());
 		return InteractionHelper.click(ring[0],"Last-destination (" + location + ")") &&
 				MethodProvider.sleepUntil(() -> myPos.distance(Players.localPlayer().getTile()) > 20,8000);
 	}

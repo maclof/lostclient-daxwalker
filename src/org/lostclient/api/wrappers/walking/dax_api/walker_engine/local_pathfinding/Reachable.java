@@ -1,15 +1,16 @@
 package org.lostclient.api.wrappers.walking.dax_api.walker_engine.local_pathfinding;
 
+import org.lostclient.api.Client;
 import org.lostclient.api.accessor.Players;
 import org.lostclient.api.interfaces.Locatable;
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.BankHelper;
 
 import java.util.*;
 
 public class Reachable {
 
-    private Tile[][] map;
+    private RSTile[][] map;
 
     /**
      * Generates reachable map from player position
@@ -18,13 +19,13 @@ public class Reachable {
         this(null);
     }
 
-    private Reachable(Tile homeTile) {
-        map = generateMap(homeTile != null ? homeTile : Players.localPlayer().getTile());
+    private Reachable(RSTile homeTile) {
+        map = generateMap(homeTile != null ? homeTile : RSTile.fromTile(Players.localPlayer().getTile()));
     }
 
-    public boolean canReach(Tile position) {
+    public boolean canReach(RSTile position) {
         position = position.toWorldTile();
-        Tile playerPosition = Players.localPlayer().getTile();
+        RSTile playerPosition = RSTile.fromTile(Players.localPlayer().getTile());
         if (playerPosition.getX() == position.getX() && playerPosition.getY() == position.getY()) {
             return true;
         }
@@ -32,19 +33,19 @@ public class Reachable {
     }
 
     public boolean canReach(int x, int y) {
-        Tile playerPosition = Players.localPlayer().getTile();
+        RSTile playerPosition = RSTile.fromTile(Players.localPlayer().getTile());
         if (playerPosition.getX() == x && playerPosition.getY() == y) {
             return true;
         }
-        Tile position = convertToLocal(x, y);
+        RSTile position = convertToLocal(x, y);
         return getParent(position) != null;
     }
 
-    public Tile closestTile(Collection<Tile> tiles) {
-        Tile closest = null;
+    public RSTile closestTile(Collection<RSTile> tiles) {
+        RSTile closest = null;
         double closestDistance = Integer.MAX_VALUE;
-        Tile playerPosition = Players.localPlayer().getTile();
-        for (Tile positionable : tiles) {
+        RSTile playerPosition = RSTile.fromTile(Players.localPlayer().getTile());
+        for (RSTile positionable : tiles) {
             double distance = playerPosition.distance(positionable);
             if (distance < closestDistance) {
                 closestDistance = distance;
@@ -59,14 +60,14 @@ public class Reachable {
      * @param y
      * @return parent tile of x and y through BFS.
      */
-    public Tile getParent(int x, int y) {
-        Tile position = convertToLocal(x, y);
+    public RSTile getParent(int x, int y) {
+        RSTile position = convertToLocal(x, y);
         return getParent(position);
     }
 
-    public Tile getParent(Locatable positionable) {
-        Tile tile = positionable.getTile();
-        if (tile.getType() != Tile.TYPES.LOCAL) {
+    public RSTile getParent(Locatable positionable) {
+        RSTile tile = RSTile.fromTile(positionable.getTile());
+        if (tile.getType() != RSTile.TYPES.LOCAL) {
             tile = tile.toLocalTile();
         }
         int x = tile.getX(), y = tile.getY();
@@ -85,7 +86,7 @@ public class Reachable {
      * @return Distance to tile. Max integer value if unreachable. Does not account for positionable behind doors
      */
     public int getDistance(int x, int y) {
-        Tile position = convertToLocal(x, y);
+        RSTile position = convertToLocal(x, y);
         return getDistance(position);
     }
 
@@ -93,8 +94,8 @@ public class Reachable {
      * @param positionable
      * @return path to tile. Does not account for positionable behind doors
      */
-    public ArrayList<Tile> getPath(Locatable positionable) {
-        Tile position = convertToLocal(positionable.getTile().getX(), positionable.getTile().getY());
+    public ArrayList<RSTile> getPath(Locatable positionable) {
+        RSTile position = convertToLocal(positionable.getTile().getX(), positionable.getTile().getY());
         int x = position.getX(), y = position.getY();
         return getPath(x, y);
     }
@@ -104,9 +105,9 @@ public class Reachable {
      * @param y
      * @return null if no path.
      */
-    public ArrayList<Tile> getPath(int x, int y) {
-        ArrayList<Tile> path = new ArrayList<>();
-        Tile playerPos = Players.localPlayer().getTile().toLocalTile();
+    public ArrayList<RSTile> getPath(int x, int y) {
+        ArrayList<RSTile> path = new ArrayList<>();
+        RSTile playerPos = RSTile.fromTile(Players.localPlayer().getTile()).toLocalTile();
         if (x == playerPos.getX() && y == playerPos.getY()) {
             return path;
         }
@@ -119,7 +120,7 @@ public class Reachable {
         if (map[x][y] == null) {
             return null;
         }
-        Tile tile = new Tile(x, y, Players.localPlayer().getTile().getZ(), Tile.TYPES.LOCAL);
+        RSTile tile = new RSTile(x, y, Players.localPlayer().getTile().getZ(), RSTile.TYPES.LOCAL);
         while ((tile = map[tile.getX()][tile.getY()]) != null) {
             path.add(tile.toWorldTile());
         }
@@ -128,9 +129,9 @@ public class Reachable {
     }
 
     public int getDistance(Locatable positionable) {
-        Tile position = convertToLocal(positionable.getTile().getX(), positionable.getTile().getY());
+        RSTile position = convertToLocal(positionable.getTile().getX(), positionable.getTile().getY());
         int x = position.getX(), y = position.getY();
-        Tile playerPos = Players.localPlayer().getTile().toLocalTile();
+        RSTile playerPos = RSTile.fromTile(Players.localPlayer().getTile()).toLocalTile();
         if (x == playerPos.getX() && y == playerPos.getY()) {
             return 0;
         }
@@ -144,28 +145,29 @@ public class Reachable {
             return Integer.MAX_VALUE;
         }
         int length = 0;
-        Tile tile = position;
+        RSTile tile = position;
         while ((tile = map[tile.getX()][tile.getY()]) != null) {
             length++;
         }
         return length;
     }
 
-    private static Tile convertToLocal(int x, int y) {
-        Tile position = new Tile(x, y, Players.localPlayer().getTile().getZ(), x >= 104 || y >= 104 ? Tile.TYPES.WORLD : Tile.TYPES.LOCAL);
-        if (position.getType() != Tile.TYPES.LOCAL) {
+    private static RSTile convertToLocal(int x, int y) {
+        RSTile position = new RSTile(x, y, Players.localPlayer().getTile().getZ(), x >= 104 || y >= 104 ? RSTile.TYPES.WORLD : RSTile.TYPES.LOCAL);
+        if (position.getType() != RSTile.TYPES.LOCAL) {
             position = position.toLocalTile();
         }
         return position;
     }
 
-    public static Tile getBestWalkableTile(Locatable positionable, Reachable reachable) {
-        Tile localPosition = positionable.getTile().toLocalTile();
-        HashSet<Tile> building = BankHelper.getBuilding(positionable);
+    public static RSTile getBestWalkableTile(Locatable positionable, Reachable reachable) {
+        RSTile localPosition = RSTile.fromTile(positionable.getTile()).toLocalTile();
+        HashSet<RSTile> building = BankHelper.getBuilding(positionable);
         boolean[][] traversed = new boolean[104][104];
-        Tile[][] parentMap = new Tile[104][104];
-        Queue<Tile> queue = new LinkedList<>();
-        int[][] collisionData = PathFinding.getCollisionData();
+        RSTile[][] parentMap = new RSTile[104][104];
+        Queue<RSTile> queue = new LinkedList<>();
+//            int[][] collisionData = PathFinding.getCollisionData();
+        int[][] collisionData = Client.getClient().getCollisionMaps()[0].getFlags();
         if(collisionData == null)
             return null;
 
@@ -178,7 +180,7 @@ public class Reachable {
         }
 
         while (!queue.isEmpty()) {
-            Tile currentLocal = queue.poll();
+            RSTile currentLocal = queue.poll();
             int x = currentLocal.getX(), y = currentLocal.getY();
 
             int currentCollisionFlags = collisionData[x][y];
@@ -201,7 +203,7 @@ public class Reachable {
                     continue; //Cannot traverse to tile from current.
                 }
 
-                Tile neighbor = direction.getPointingTile(currentLocal);
+                RSTile neighbor = direction.getPointingTile(currentLocal);
                 int destinationX = neighbor.getX(), destinationY = neighbor.getY();
                 if (traversed[destinationX][destinationY]) {
                     continue; //Traversed already
@@ -219,25 +221,26 @@ public class Reachable {
      * @return gets collision map.
      */
     public static Reachable getMap() {
-        return new Reachable(Players.localPlayer().getTile());
+        return new Reachable(RSTile.fromTile(Players.localPlayer().getTile()));
     }
 
-    public static Reachable getMap(Tile homeTile) {
+    public static Reachable getMap(RSTile homeTile) {
         return new Reachable(homeTile);
     }
 
     /**
      * @return local reachable tiles
      */
-    private static Tile[][] generateMap(Tile homeTile) {
-        Tile localPlayerPosition = homeTile.toLocalTile();
+    private static RSTile[][] generateMap(RSTile homeTile) {
+        RSTile localPlayerPosition = homeTile.toLocalTile();
         boolean[][] traversed = new boolean[104][104];
-        Tile[][] parentMap = new Tile[104][104];
-        Queue<Tile> queue = new LinkedList<>();
-        int[][] collisionData = PathFinding.getCollisionData();
+        RSTile[][] parentMap = new RSTile[104][104];
+        Queue<RSTile> queue = new LinkedList<>();
+//            int[][] collisionData = PathFinding.getCollisionData();
+        int[][] collisionData = Client.getClient().getCollisionMaps()[0].getFlags();
 
         if(collisionData == null)
-            return new Tile[][]{};
+            return new RSTile[][]{};
 
         queue.add(localPlayerPosition);
         try {
@@ -248,7 +251,7 @@ public class Reachable {
         }
 
         while (!queue.isEmpty()) {
-            Tile currentLocal = queue.poll();
+            RSTile currentLocal = queue.poll();
             int x = currentLocal.getX(), y = currentLocal.getY();
 
             int currentCollisionFlags = collisionData[x][y];
@@ -261,7 +264,7 @@ public class Reachable {
                     continue; //Cannot traverse to tile from current.
                 }
 
-                Tile neighbor = direction.getPointingTile(currentLocal);
+                RSTile neighbor = direction.getPointingTile(currentLocal);
                 int destinationX = neighbor.getX(), destinationY = neighbor.getY();
                 if (traversed[destinationX][destinationY]) {
                     continue; //Traversed already
@@ -293,7 +296,7 @@ public class Reachable {
             this.y = y;
         }
 
-        public Tile getPointingTile(Tile tile) {
+        public RSTile getPointingTile(RSTile tile) {
             return tile.translate(x, y);
         }
 

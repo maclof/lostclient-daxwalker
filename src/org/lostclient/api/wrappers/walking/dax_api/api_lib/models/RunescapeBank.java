@@ -1,6 +1,6 @@
 package org.lostclient.api.wrappers.walking.dax_api.api_lib.models;
 
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 
 public enum RunescapeBank {
     AL_KHARID(3269, 3167, 0),
@@ -65,12 +65,12 @@ public enum RunescapeBank {
     ZANARIS(2383, 4458, 0),
     ZEAH_SAND_BANK(1719, 3465, 0)
     ;
-    Tile position;
+    RSTile position;
     RunescapeBank(int x, int y, int z){
-        this.position = new Tile(x,y,z);
+        this.position = new RSTile(x,y,z);
     }
 
-    public Tile getTile(){
+    public RSTile getTile(){
         return this.position;
     }
 }

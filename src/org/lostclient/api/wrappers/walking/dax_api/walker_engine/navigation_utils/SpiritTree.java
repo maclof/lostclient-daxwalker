@@ -2,7 +2,7 @@ package org.lostclient.api.wrappers.walking.dax_api.walker_engine.navigation_uti
 
 import org.lostclient.api.accessor.Players;
 import org.lostclient.api.utilities.math.Calculations;
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.GameObjectHelper;
 import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.InterfaceHelper;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.WaitFor;
@@ -30,8 +30,8 @@ public class SpiritTree {
         public String getName() {
             return name;
         }
-        public Tile getTile(){
-            return new Tile(x, y, z);
+        public RSTile getTile(){
+            return new RSTile(x, y, z);
         }
 
         public int getX() {

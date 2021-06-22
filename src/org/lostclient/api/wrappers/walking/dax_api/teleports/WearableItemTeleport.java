@@ -5,7 +5,7 @@ import org.lostclient.api.containers.equipment.Equipment;
 import org.lostclient.api.containers.inventory.Inventory;
 import org.lostclient.api.utilities.math.Calculations;
 import org.lostclient.api.wrappers.item.Item;
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.ItemHelper;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.WaitFor;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.interaction_handling.NPCInteraction;
@@ -61,7 +61,7 @@ public class WearableItemTeleport {
 		}
 
 		Item teleportItem = items.get(0);
-		final Tile startingPosition = Players.localPlayer().getTile();
+		final RSTile startingPosition = RSTile.fromTile(Players.localPlayer().getTile());
 
 		return ItemHelper.clickMatch(teleportItem, "(Rub|Teleport|" + regex + ")") && WaitFor.condition(
 				Calculations.random(3800, 4600), () -> {

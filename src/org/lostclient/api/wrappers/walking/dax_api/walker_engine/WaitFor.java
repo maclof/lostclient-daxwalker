@@ -5,7 +5,7 @@ import org.lostclient.api.interfaces.Interactable;
 import org.lostclient.api.interfaces.Locatable;
 import org.lostclient.api.utilities.MethodProvider;
 import org.lostclient.api.utilities.math.Calculations;
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 import org.lostclient.api.wrappers.walking.Walking;
 
 import java.util.Random;
@@ -16,7 +16,7 @@ public class WaitFor {
 
     public static Condition getNotMovingCondition(){
         return new Condition() {
-            final Tile initialTile = Players.localPlayer().getTile();
+            final RSTile initialTile = RSTile.fromTile(Players.localPlayer().getTile());
             final long movingDelay = 1300, startTime = System.currentTimeMillis();
 
             @Override

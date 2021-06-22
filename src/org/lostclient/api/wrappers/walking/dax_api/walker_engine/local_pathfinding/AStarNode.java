@@ -1,6 +1,6 @@
 package org.lostclient.api.wrappers.walking.dax_api.walker_engine.local_pathfinding;
 
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 
 public class AStarNode {
 
@@ -174,11 +174,11 @@ public class AStarNode {
         return x + " " + y + " " + z;
     }
 
-    public Tile toTile(){
-        return new Tile(x, y, z);
+    public RSTile toTile(){
+        return new RSTile(x, y, z);
     }
 
-    public static String stringID(Tile tile){
+    public static String stringID(RSTile tile){
         return tile.getX() + " " + tile.getY() + " " + tile.getZ();
     }
 

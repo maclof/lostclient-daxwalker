@@ -5,18 +5,18 @@ import org.lostclient.api.accessor.Players;
 import org.lostclient.api.utilities.math.Calculations;
 import org.lostclient.api.wrappers.interactives.GameObject;
 import org.lostclient.api.wrappers.map.Area;
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.GameObjectHelper;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.WaitFor;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.interaction_handling.InteractionHelper;
 
 public class ShipUtils {
 
-    private static final Tile[] SPECIAL_CASES = new Tile[]{new Tile(2663, 2676, 1)};
+    private static final RSTile[] SPECIAL_CASES = new RSTile[]{new RSTile(2663, 2676, 1)};
 
     public static boolean isOnShip() {
-        Tile playerPos = Players.localPlayer().getTile();
-        for (Tile specialCase : SPECIAL_CASES){
+        RSTile playerPos = RSTile.fromTile(Players.localPlayer().getTile());
+        for (RSTile specialCase : SPECIAL_CASES){
             if (new Area(specialCase, 5).contains(playerPos)){
                 return true;
             }

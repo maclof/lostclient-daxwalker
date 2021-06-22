@@ -5,7 +5,7 @@ import org.lostclient.api.accessor.PlayerSettings;
 import org.lostclient.api.interfaces.Locatable;
 import org.lostclient.api.wrappers.input.Mouse;
 import org.lostclient.api.wrappers.interactives.Entity;
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 import org.lostclient.api.wrappers.walking.dax_api.walker.utils.movement.WalkingQueue;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.WaitFor;
 
@@ -24,7 +24,7 @@ public class CameraAction {
     }
 
     public static boolean focusCamera(Locatable positionable){
-//        Tile tile = positionable.getTile();
+//        RSTile tile = positionable.getTile();
 //        if (tile.isOnScreen() && tile.isInteractable()){
 //            return true;
 //        }
@@ -47,8 +47,8 @@ public class CameraAction {
 //            return true;
 //        }
 //
-//        Tile destination = rsCharacter.getTile();
-//        Tile newDestination = WalkingQueue.getWalkingTowards(rsCharacter);
+//        RSTile destination = rsCharacter.getTile();
+//        RSTile newDestination = WalkingQueue.getWalkingTowards(rsCharacter);
 //        if (newDestination != null){
 //            destination = newDestination;
 //        }

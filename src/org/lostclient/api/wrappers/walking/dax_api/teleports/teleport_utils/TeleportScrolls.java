@@ -4,29 +4,29 @@ import org.lostclient.api.accessor.Players;
 import org.lostclient.api.containers.inventory.Inventory;
 import org.lostclient.api.utilities.MethodProvider;
 import org.lostclient.api.wrappers.item.Item;
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.magic.Validatable;
 
 public enum TeleportScrolls implements Validatable {
-	NARDAH("Nardah teleport",new Tile(3419, 2916, 0)),
-	DIGSITE("Digsite teleport",new Tile(3325, 3411, 0)),
-	FELDIP_HILLS("Feldip hills teleport",new Tile(2540, 2924, 0)),
-	LUNAR_ISLE("Lunar isle teleport",new Tile(2095, 3913, 0)),
-	MORTTON("Mort'ton teleport",new Tile(3487, 3287, 0)),
-	PEST_CONTROL("Pest control teleport",new Tile(2658, 2658, 0)),
-	PISCATORIS("Piscatoris teleport",new Tile(2340, 3650, 0)),
-	TAI_BWO_WANNAI("Tai bwo wannai teleport",new Tile(2789,3065,0)),
-	ELF_CAMP("Elf camp teleport",new Tile(2193, 3258, 0)),
-	MOS_LE_HARMLESS("Mos le'harmless teleport", new Tile(3700, 2996, 0)),
-	LUMBERYARD("Lumberyard teleport",new Tile(3302, 3487, 0)),
-	ZULLANDRA("Zul-andra teleport",new Tile(2195, 3055, 0)),
-	KEY_MASTER("Key master teleport",new Tile(1311, 1251, 0)),
-	REVENANT_CAVES("Revenant cave teleport",new Tile(3130, 3832, 0)),
-	WATSON("Watson teleport", new Tile(1645, 3579,0))
+	NARDAH("Nardah teleport",new RSTile(3419, 2916, 0)),
+	DIGSITE("Digsite teleport",new RSTile(3325, 3411, 0)),
+	FELDIP_HILLS("Feldip hills teleport",new RSTile(2540, 2924, 0)),
+	LUNAR_ISLE("Lunar isle teleport",new RSTile(2095, 3913, 0)),
+	MORTTON("Mort'ton teleport",new RSTile(3487, 3287, 0)),
+	PEST_CONTROL("Pest control teleport",new RSTile(2658, 2658, 0)),
+	PISCATORIS("Piscatoris teleport",new RSTile(2340, 3650, 0)),
+	TAI_BWO_WANNAI("Tai bwo wannai teleport",new RSTile(2789,3065,0)),
+	ELF_CAMP("Elf camp teleport",new RSTile(2193, 3258, 0)),
+	MOS_LE_HARMLESS("Mos le'harmless teleport", new RSTile(3700, 2996, 0)),
+	LUMBERYARD("Lumberyard teleport",new RSTile(3302, 3487, 0)),
+	ZULLANDRA("Zul-andra teleport",new RSTile(2195, 3055, 0)),
+	KEY_MASTER("Key master teleport",new RSTile(1311, 1251, 0)),
+	REVENANT_CAVES("Revenant cave teleport",new RSTile(3130, 3832, 0)),
+	WATSON("Watson teleport", new RSTile(1645, 3579,0))
 	;
 	private String name;
-	private Tile location;
-	TeleportScrolls(String name, Tile location){
+	private RSTile location;
+	TeleportScrolls(String name, RSTile location){
 		this.name = name;
 		this.location = location;
 	}
@@ -50,7 +50,7 @@ public enum TeleportScrolls implements Validatable {
 		return Inventory.contains(this.name);
 	}
 
-	public Tile getLocation(){
+	public RSTile getLocation(){
 		return location;
 	}
 

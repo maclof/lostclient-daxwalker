@@ -13,9 +13,10 @@ import org.lostclient.api.wrappers.interactives.GameObject;
 import org.lostclient.api.wrappers.interactives.NPC;
 import org.lostclient.api.wrappers.item.Item;
 import org.lostclient.api.wrappers.map.Area;
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 import org.lostclient.api.wrappers.walking.Walking;
 import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.GameObjectHelper;
+import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.NPCHelper;
 import org.lostclient.api.wrappers.walking.dax_api.shared.helpers.StringHelper;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.Loggable;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.WaitFor;
@@ -59,8 +60,8 @@ public class PathObjectHandler implements Loggable {
             boolean isSpecialLocation(PathAnalyzer.DestinationDetails destinationDetails) {
                 return GameObjectHelper.find(15,
                         GameObjectHelper.inAreaPredicate(new Area(destinationDetails.getAssumed(), 1))
-                                .and(GameObjectHelper.nameEqualsPredicate("Web"), true)
-                                .and(GameObjectHelper.actionsContainsPredicate("Slash"), true)).length > 0;
+                                .and(GameObjectHelper.nameEqualsPredicate("Web"))
+                                .and(GameObjectHelper.actionsContainsPredicate("Slash"))).length > 0;
             }
         }),
         ROCKFALL("Rockfall", "Mine", null, new SpecialCondition() {
@@ -68,8 +69,8 @@ public class PathObjectHandler implements Loggable {
             boolean isSpecialLocation(PathAnalyzer.DestinationDetails destinationDetails) {
                 return GameObjectHelper.find(15,
                         GameObjectHelper.inAreaPredicate(new Area(destinationDetails.getAssumed(), 1))
-                                .and(GameObjectHelper.nameEqualsPredicate("Rockfall"), true)
-                                .and(GameObjectHelper.actionsContainsPredicate("Mine"), true)).length > 0;
+                                .and(GameObjectHelper.nameEqualsPredicate("Rockfall"))
+                                .and(GameObjectHelper.actionsContainsPredicate("Mine"))).length > 0;
             }
         }),
         ROOTS("Roots", "Chop", null, new SpecialCondition() {
@@ -77,8 +78,8 @@ public class PathObjectHandler implements Loggable {
             boolean isSpecialLocation(PathAnalyzer.DestinationDetails destinationDetails) {
                 return GameObjectHelper.find(15,
                         GameObjectHelper.inAreaPredicate(new Area(destinationDetails.getAssumed(), 1))
-                                .and(GameObjectHelper.nameEqualsPredicate("Roots"), true)
-                                .and(GameObjectHelper.actionsContainsPredicate("Chop"), true)).length > 0;
+                                .and(GameObjectHelper.nameEqualsPredicate("Roots"))
+                                .and(GameObjectHelper.actionsContainsPredicate("Chop"))).length > 0;
             }
         }),
         ROCK_SLIDE("Rockslide", "Climb-over", null, new SpecialCondition() {
@@ -86,8 +87,8 @@ public class PathObjectHandler implements Loggable {
             boolean isSpecialLocation(PathAnalyzer.DestinationDetails destinationDetails) {
                 return GameObjectHelper.find(15,
                         GameObjectHelper.inAreaPredicate(new Area(destinationDetails.getAssumed(), 1))
-                                .and(GameObjectHelper.nameEqualsPredicate("Rockslide"), true)
-                                .and(GameObjectHelper.actionsContainsPredicate("Climb-over"), true)).length > 0;
+                                .and(GameObjectHelper.nameEqualsPredicate("Rockslide"))
+                                .and(GameObjectHelper.actionsContainsPredicate("Climb-over"))).length > 0;
             }
         }),
         ROOT("Root", "Step-over", null, new SpecialCondition() {
@@ -95,8 +96,8 @@ public class PathObjectHandler implements Loggable {
             boolean isSpecialLocation(PathAnalyzer.DestinationDetails destinationDetails) {
                 return GameObjectHelper.find(15,
                         GameObjectHelper.inAreaPredicate(new Area(destinationDetails.getAssumed(), 1))
-                                .and(GameObjectHelper.nameEqualsPredicate("Root"), true)
-                                .and(GameObjectHelper.actionsContainsPredicate("Step-over"), true)).length > 0;
+                                .and(GameObjectHelper.nameEqualsPredicate("Root"))
+                                .and(GameObjectHelper.actionsContainsPredicate("Step-over"))).length > 0;
             }
         }),
         BRIMHAVEN_VINES("Vines", "Chop-down", null, new SpecialCondition() {
@@ -104,85 +105,85 @@ public class PathObjectHandler implements Loggable {
             boolean isSpecialLocation(PathAnalyzer.DestinationDetails destinationDetails) {
                 return GameObjectHelper.find(15,
                         GameObjectHelper.inAreaPredicate(new Area(destinationDetails.getAssumed(), 1))
-                                .and(GameObjectHelper.nameEqualsPredicate("Vines"), true)
-                                .and(GameObjectHelper.actionsContainsPredicate("Chop-down"), true)).length > 0;
+                                .and(GameObjectHelper.nameEqualsPredicate("Vines"))
+                                .and(GameObjectHelper.actionsContainsPredicate("Chop-down"))).length > 0;
             }
         }),
-        AVA_BOOKCASE ("Bookcase", "Search", new Tile(3097, 3359, 0), new SpecialCondition() {
+        AVA_BOOKCASE ("Bookcase", "Search", new RSTile(3097, 3359, 0), new SpecialCondition() {
             @Override
             boolean isSpecialLocation(PathAnalyzer.DestinationDetails destinationDetails) {
-                return destinationDetails.getDestination().getX() >= 3097 && destinationDetails.getAssumed().equals(new Tile(3097, 3359, 0));
+                return destinationDetails.getDestination().getX() >= 3097 && destinationDetails.getAssumed().equals(new RSTile(3097, 3359, 0));
             }
         }),
-        AVA_LEVER ("Lever", "Pull", new Tile(3096, 3357, 0), new SpecialCondition() {
+        AVA_LEVER ("Lever", "Pull", new RSTile(3096, 3357, 0), new SpecialCondition() {
             @Override
             boolean isSpecialLocation(PathAnalyzer.DestinationDetails destinationDetails) {
-                return destinationDetails.getDestination().getX() < 3097 && destinationDetails.getAssumed().equals(new Tile(3097, 3359, 0));
+                return destinationDetails.getDestination().getX() < 3097 && destinationDetails.getAssumed().equals(new RSTile(3097, 3359, 0));
             }
         }),
-        ARDY_DOOR_LOCK_SIDE("Door", "Pick-lock", new Tile(2565, 3356, 0), new SpecialCondition() {
+        ARDY_DOOR_LOCK_SIDE("Door", "Pick-lock", new RSTile(2565, 3356, 0), new SpecialCondition() {
             @Override
             boolean isSpecialLocation(PathAnalyzer.DestinationDetails destinationDetails) {
-                return Players.localPlayer().getTile().getX() >= 2565 && Players.localPlayer().getTile().distance(new Tile(2565, 3356, 0)) < 3;
+                return Players.localPlayer().getTile().getX() >= 2565 && Players.localPlayer().getTile().distance(new RSTile(2565, 3356, 0)) < 3;
             }
         }),
-        ARDY_DOOR_UNLOCKED_SIDE("Door", "Open", new Tile(2565, 3356, 0), new SpecialCondition() {
+        ARDY_DOOR_UNLOCKED_SIDE("Door", "Open", new RSTile(2565, 3356, 0), new SpecialCondition() {
             @Override
             boolean isSpecialLocation(PathAnalyzer.DestinationDetails destinationDetails) {
-                return Players.localPlayer().getTile().getX() < 2565 && Players.localPlayer().getTile().distance(new Tile(2565, 3356, 0)) < 3;
+                return Players.localPlayer().getTile().getX() < 2565 && Players.localPlayer().getTile().distance(new RSTile(2565, 3356, 0)) < 3;
             }
         }),
-        YANILLE_DOOR_LOCK_SIDE("Door", "Pick-lock", new Tile(2601, 9482, 0), new SpecialCondition() {
+        YANILLE_DOOR_LOCK_SIDE("Door", "Pick-lock", new RSTile(2601, 9482, 0), new SpecialCondition() {
             @Override
             boolean isSpecialLocation(PathAnalyzer.DestinationDetails destinationDetails) {
-                return Players.localPlayer().getTile().getY() <= 9481 && Players.localPlayer().getTile().distance(new Tile(2601, 9482, 0)) < 3;
+                return Players.localPlayer().getTile().getY() <= 9481 && Players.localPlayer().getTile().distance(new RSTile(2601, 9482, 0)) < 3;
             }
         }),
-        YANILLE_DOOR_UNLOCKED_SIDE("Door", "Open", new Tile(2601, 9482, 0), new SpecialCondition() {
+        YANILLE_DOOR_UNLOCKED_SIDE("Door", "Open", new RSTile(2601, 9482, 0), new SpecialCondition() {
             @Override
             boolean isSpecialLocation(PathAnalyzer.DestinationDetails destinationDetails) {
-                return Players.localPlayer().getTile().getY() > 9481 && Players.localPlayer().getTile().distance(new Tile(2601, 9482, 0)) < 3;
+                return Players.localPlayer().getTile().getY() > 9481 && Players.localPlayer().getTile().distance(new RSTile(2601, 9482, 0)) < 3;
             }
         }),
-        EDGEVILLE_UNDERWALL_TUNNEL("Underwall tunnel", "Climb-into", new Tile(3138, 3516, 0), new SpecialCondition() {
+        EDGEVILLE_UNDERWALL_TUNNEL("Underwall tunnel", "Climb-into", new RSTile(3138, 3516, 0), new SpecialCondition() {
             @Override
             boolean isSpecialLocation(PathAnalyzer.DestinationDetails destinationDetails) {
-                return destinationDetails.getAssumed().equals(new Tile(3138, 3516, 0));
+                return destinationDetails.getAssumed().equals(new RSTile(3138, 3516, 0));
             }
         }),
-        VARROCK_UNDERWALL_TUNNEL("Underwall tunnel", "Climb-into", new Tile(3141, 3513, 0), new SpecialCondition() {
+        VARROCK_UNDERWALL_TUNNEL("Underwall tunnel", "Climb-into", new RSTile(3141, 3513, 0), new SpecialCondition() {
             @Override
             boolean isSpecialLocation(PathAnalyzer.DestinationDetails destinationDetails) {
-                return destinationDetails.getAssumed().equals(new Tile(3141, 3513, 0 ));
+                return destinationDetails.getAssumed().equals(new RSTile(3141, 3513, 0 ));
             }
         }),
-        GAMES_ROOM_STAIRS("Stairs", "Climb-down", new Tile(2899, 3565, 0), new SpecialCondition() {
+        GAMES_ROOM_STAIRS("Stairs", "Climb-down", new RSTile(2899, 3565, 0), new SpecialCondition() {
             @Override
             boolean isSpecialLocation(PathAnalyzer.DestinationDetails destinationDetails) {
-                return destinationDetails.getDestination().getTile().equals(new Tile(2899, 3565, 0)) &&
-                    destinationDetails.getAssumed().equals(new Tile(2205, 4934, 1));
+                return destinationDetails.getDestination().getTile().equals(new RSTile(2899, 3565, 0)) &&
+                    destinationDetails.getAssumed().equals(new RSTile(2205, 4934, 1));
             }
         }),
-        CANIFIS_BASEMENT_WALL("Wall", "Search", new Tile(3480, 9836, 0),new SpecialCondition() {
+        CANIFIS_BASEMENT_WALL("Wall", "Search", new RSTile(3480, 9836, 0),new SpecialCondition() {
             @Override
             boolean isSpecialLocation(PathAnalyzer.DestinationDetails destinationDetails) {
-                return destinationDetails.getDestination().getTile().equals(new Tile(3480, 9836, 0)) ||
-                    destinationDetails.getAssumed().equals(new Tile(3480, 9836, 0));
+                return destinationDetails.getDestination().getTile().equals(new RSTile(3480, 9836, 0)) ||
+                    destinationDetails.getAssumed().equals(new RSTile(3480, 9836, 0));
             }
         }),
-        BRINE_RAT_CAVE_BOULDER("Cave", "Exit", new Tile(2690, 10125, 0), new SpecialCondition() {
+        BRINE_RAT_CAVE_BOULDER("Cave", "Exit", new RSTile(2690, 10125, 0), new SpecialCondition() {
             @Override
             boolean isSpecialLocation(PathAnalyzer.DestinationDetails destinationDetails) {
-                return destinationDetails.getDestination().getTile().equals(new Tile(2690, 10125, 0))
-                    && NPCs.find(NPCHelper.nameEqualsPredicate("Boulder").and(NPCHelper.actionsContainsPredicate("Roll"))).length > 0;
+                return destinationDetails.getDestination().getTile().equals(new RSTile(2690, 10125, 0))
+                    && NPCs.closest(NPCHelper.nameEqualsPredicate("Boulder").and(NPCHelper.actionsContainsPredicate("Roll"))) != null;
             }
         });
 
         private String name, action;
-        private Tile location;
+        private RSTile location;
         private SpecialCondition specialCondition;
 
-        SpecialObject(String name, String action, Tile location, SpecialCondition specialCondition){
+        SpecialObject(String name, String action, RSTile location, SpecialCondition specialCondition){
             this.name = name;
             this.action = action;
             this.location = location;
@@ -197,7 +198,7 @@ public class PathObjectHandler implements Loggable {
             return action;
         }
 
-        public Tile getLocation() {
+        public RSTile getLocation() {
             return location;
         }
 
@@ -220,7 +221,7 @@ public class PathObjectHandler implements Loggable {
         abstract boolean isSpecialLocation(PathAnalyzer.DestinationDetails destinationDetails);
     }
 
-    public static boolean handle(PathAnalyzer.DestinationDetails destinationDetails, List<Tile> path){
+    public static boolean handle(PathAnalyzer.DestinationDetails destinationDetails, List<RSTile> path){
         RealTimeCollisionTile start = destinationDetails.getDestination(), end = destinationDetails.getNextTile();
 
         GameObject[] interactiveObjects = null;
@@ -234,8 +235,8 @@ public class PathObjectHandler implements Loggable {
         } else {
             action = specialObject.getAction();
             Predicate<GameObject> specialObjectFilter = GameObjectHelper.nameEqualsPredicate(specialObject.getName())
-                    .and(GameObjectHelper.actionsContainsPredicate(specialObject.getAction()), true)
-                    .and(GameObjectHelper.inAreaPredicate(new Area(specialObject.getLocation() != null ? specialObject.getLocation() : destinationDetails.getAssumed(), 1)), true);
+                    .and(GameObjectHelper.actionsContainsPredicate(specialObject.getAction()))
+                    .and(GameObjectHelper.inAreaPredicate(new Area(specialObject.getLocation() != null ? specialObject.getLocation() : destinationDetails.getAssumed(), 1)));
             interactiveObjects = GameObjectHelper.findClosest(15, specialObjectFilter);
         }
 
@@ -244,14 +245,14 @@ public class PathObjectHandler implements Loggable {
         }
 
         StringBuilder stringBuilder = new StringBuilder("Sort Order: ");
-        Arrays.stream(interactiveObjects).forEach(rsObject -> stringBuilder.append(rsObject.getDefinition().getName()).append(" ").append(
-		        Arrays.asList(rsObject.getDefinition().getActions())).append(", "));
+        Arrays.stream(interactiveObjects).forEach(rsObject -> stringBuilder.append(rsObject.getName()).append(" ").append(
+		        Arrays.asList(rsObject.getActions())).append(", "));
         getInstance().log(stringBuilder);
 
         return handle(path, interactiveObjects[0], destinationDetails, action, specialObject);
     }
 
-    private static boolean handle(List<Tile> path, GameObject object, PathAnalyzer.DestinationDetails destinationDetails, String action, SpecialObject specialObject){
+    private static boolean handle(List<RSTile> path, GameObject object, PathAnalyzer.DestinationDetails destinationDetails, String action, SpecialObject specialObject){
         PathAnalyzer.DestinationDetails current = PathAnalyzer.furthestReachableTile(path);
 
         if (current == null){
@@ -259,12 +260,14 @@ public class PathObjectHandler implements Loggable {
         }
 
         RealTimeCollisionTile currentFurthest = current.getDestination();
-        if (!Players.localPlayer().isMoving() && (!object.isOnScreen() || !object.isInteractable())){
+        if (!Players.localPlayer().isMoving() && !object.isInteractable()){
+//        if (!Players.localPlayer().isMoving() && (!object.isOnScreen() || !object.isInteractable())){
             if (!WalkerEngine.getInstance().clickMinimap(destinationDetails.getDestination())){
                 return false;
             }
         }
-        if (WaitFor.condition(Calculations.random(5000, 8000), () -> object.isOnScreen() && object.isInteractable() ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) != WaitFor.Return.SUCCESS) {
+        if (WaitFor.condition(Calculations.random(5000, 8000), () -> object.isInteractable() ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) != WaitFor.Return.SUCCESS) {
+//        if (WaitFor.condition(Calculations.random(5000, 8000), () -> object.isOnScreen() && object.isInteractable() ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE) != WaitFor.Return.SUCCESS) {
             return false;
         }
 
@@ -276,7 +279,7 @@ public class PathObjectHandler implements Loggable {
                 case WEB:
                     List<GameObject> webs;
                     int iterations = 0;
-                    while ((webs = Arrays.stream(GameObjects.getAt(object.getTile()))
+                    while ((webs = Arrays.stream(GameObjectHelper.getAt(RSTile.fromTile(object.getTile())))
                             .filter(object1 -> Arrays.stream(GameObjectHelper.getActions(object1))
                                     .anyMatch(s -> s.equals("Slash"))).collect(Collectors.toList())).size() > 0){
                         GameObject web = webs.get(0);
@@ -285,7 +288,8 @@ public class PathObjectHandler implements Loggable {
                         } else {
                             useBladeOnWeb(web);
                         }
-                        if(Game.isUptext("->")){
+                        String toolTip = Menu.getToolTip();
+                        if(toolTip != null && toolTip.contains("->")){
                             Walking.setWalkFlag(Players.localPlayer().getTile());
                         }
                         if (web.getTile().distance(Players.localPlayer().getTile()) <= 1) {
@@ -295,7 +299,7 @@ public class PathObjectHandler implements Loggable {
                             WaitFor.milliseconds(2000, 4000);
                         }
                         if (Reachable.getMap().getParent(destinationDetails.getAssumedX(), destinationDetails.getAssumedY()) != null &&
-                                (webs = Arrays.stream(Objects.getAt(object.getTile())).filter(object1 -> Arrays.stream(GameObjectHelper.getActions(object1))
+                                (webs = Arrays.stream(GameObjectHelper.getAt(RSTile.fromTile(object.getTile()))).filter(object1 -> Arrays.stream(GameObjectHelper.getActions(object1))
                                         .anyMatch(s -> s.equals("Slash"))).collect(Collectors.toList())).size() == 0){
                             successfulClick = true;
                             break;
@@ -314,7 +318,7 @@ public class PathObjectHandler implements Loggable {
                         if (Players.localPlayer().getTile().distance(specialObject.getLocation()) > 1){
                             WaitFor.condition(Calculations.random(3000, 4000), () -> Players.localPlayer().getTile().distance(specialObject.getLocation()) <= 1 ? WaitFor.Return.SUCCESS : WaitFor.Return.IGNORE);
                         }
-                        if (Players.localPlayer().getTile().equals(new Tile(2564, 3356, 0))){
+                        if (Players.localPlayer().getTile().equals(new RSTile(2564, 3356, 0))){
                             successfulClick = true;
                             break;
                         }
@@ -364,7 +368,7 @@ public class PathObjectHandler implements Loggable {
 
         if (strongholdDoor){
             if (WaitFor.condition(Calculations.random(6700, 7800), () -> {
-                Tile playerPosition = Players.localPlayer().getTile();
+                RSTile playerPosition = RSTile.fromTile(Players.localPlayer().getTile());
                 if (BFS.isReachable(RealTimeCollisionTile.get(playerPosition.getX(), playerPosition.getY(), playerPosition.getZ()), destinationDetails.getNextTile(), 50)) {
                     WaitFor.milliseconds(500, 1000);
                     return WaitFor.Return.SUCCESS;
@@ -405,8 +409,8 @@ public class PathObjectHandler implements Loggable {
     }
 
     public static GameObject[] getInteractiveObjects(int x, int y, int z, PathAnalyzer.DestinationDetails destinationDetails){
-        GameObject[] objects = Objects.getAll(25, interactiveObjectFilter(x, y, z, destinationDetails));
-        final Tile base = new Tile(x, y, z);
+        GameObject[] objects = GameObjectHelper.find(25, interactiveObjectFilter(x, y, z, destinationDetails));
+        final RSTile base = new RSTile(x, y, z);
         Arrays.sort(objects, (o1, o2) -> {
             int c = Integer.compare((int)o1.getTile().distance(base), (int)o2.getTile().distance(base));
             int assumedZ = destinationDetails.getAssumedZ(), destinationZ = destinationDetails.getDestination().getZ();
@@ -459,7 +463,7 @@ public class PathObjectHandler implements Loggable {
      * @return
      */
     private static Predicate<GameObject> interactiveObjectFilter(int x, int y, int z, PathAnalyzer.DestinationDetails destinationDetails){
-        final Tile position = new Tile(x, y, z);
+        final RSTile position = new RSTile(x, y, z);
         return (o) -> {
             String name = o.getName();
             if (getInstance().sortedBlackList.contains(name)) {
@@ -580,7 +584,7 @@ public class PathObjectHandler implements Loggable {
     private static boolean handleTrapDoor(GameObject object){
         if (getActions(object).contains("Open")){
             if (!InteractionHelper.click(object, "Open", () -> {
-                GameObject[] objects = GameObjectHelper.find(15, GameObjectHelper.actionsContainsPredicate("Climb-down").and(GameObjectHelper.inAreaPredicate(new Area(object, 2)), true));
+                GameObject[] objects = GameObjectHelper.find(15, GameObjectHelper.actionsContainsPredicate("Climb-down").and(GameObjectHelper.inAreaPredicate(new Area(object.getTile(), 2))));
                 if (objects.length > 0 && getActions(objects[0]).contains("Climb-down")){
                     return WaitFor.Return.SUCCESS;
                 }
@@ -588,11 +592,11 @@ public class PathObjectHandler implements Loggable {
             })){
                 return false;
             } else {
-                GameObject[] objects = GameObjectHelper.find(15, GameObjectHelper.actionsContainsPredicate("Climb-down").and(GameObjectHelper.inAreaPredicate(new Area(object, 2)), true));
+                GameObject[] objects = GameObjectHelper.find(15, GameObjectHelper.actionsContainsPredicate("Climb-down").and(GameObjectHelper.inAreaPredicate(new Area(object.getTile(), 2))));
                 return objects.length > 0 && handleTrapDoor(objects[0]);
             }
         }
-        getInstance().log("Interacting with (" + object.getDefinition().getName() + ") at " + object.getTile() + " with option: Climb-down");
+        getInstance().log("Interacting with (" + object.getName() + ") at " + object.getTile() + " with option: Climb-down");
         return InteractionHelper.click(object, "Climb-down");
     }
 

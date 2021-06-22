@@ -4,11 +4,12 @@ import org.lostclient.api.Client;
 import org.lostclient.api.accessor.Players;
 import org.lostclient.api.interfaces.Locatable;
 import org.lostclient.api.utilities.MethodProvider;
+import org.lostclient.api.utilities.internal.RSCollisionMap;
 import org.lostclient.api.wrappers.interactives.Character;
 import org.lostclient.api.wrappers.interactives.Entity;
 import org.lostclient.api.wrappers.interactives.NPC;
 import org.lostclient.api.wrappers.interactives.Player;
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.local_pathfinding.AStarNode;
 import org.lostclient.api.wrappers.walking.dax_api.walker_engine.local_pathfinding.Reachable;
 
@@ -23,21 +24,21 @@ import java.util.*;
 public class DaxPathFinder {
 
     public static class Destination {
-        private Tile tile;
+        private RSTile tile;
         private Destination parent;
         private int distance;
 
-        public Destination(Tile tile, Destination parent, int distance) {
+        public Destination(RSTile tile, Destination parent, int distance) {
             this.tile = tile;
             this.parent = parent;
             this.distance = distance;
         }
 
-        public Tile getLocalTile() {
+        public RSTile getLocalTile() {
             return tile;
         }
 
-        public Tile getWorldTile() {
+        public RSTile getWorldTile() {
             return tile.toWorldTile();
         }
 
@@ -49,7 +50,7 @@ public class DaxPathFinder {
             return distance;
         }
 
-        public List<Tile> getPath() {
+        public List<RSTile> getPath() {
             return DaxPathFinder.getPath(this);
         }
     }
@@ -59,7 +60,7 @@ public class DaxPathFinder {
      *
      * @return The path your character is following.
      */
-    public static List<Tile> getWalkingQueue() {
+    public static List<RSTile> getWalkingQueue() {
         return getWalkingQueue(getMap());
     }
 
@@ -69,8 +70,8 @@ public class DaxPathFinder {
      * @param map
      * @return The path your character is following.
      */
-    public static List<Tile> getWalkingQueue(Destination[][] map) {
-        Tile destination = new Tile(Client.getClient().getDestinationX(), Client.getClient().getDestinationY(), Client.getClient().getClient_plane());
+    public static List<RSTile> getWalkingQueue(Destination[][] map) {
+        RSTile destination = new RSTile(Client.getClient().getDestinationX(), Client.getClient().getDestinationY(), Client.getClient().getClient_plane());
         if (destination == null) {
             destination = getNextWalkingTile();
         }
@@ -84,8 +85,8 @@ public class DaxPathFinder {
      * @param tile
      * @return true if your character is walking or will walk to that tile in the next game tick.
      */
-    public static boolean isWalkingTowards(Tile tile){
-        Tile tile1 = getNextWalkingTile();
+    public static boolean isWalkingTowards(RSTile tile){
+        RSTile tile1 = getNextWalkingTile();
         return tile1 != null && tile1.equals(tile);
     }
 
@@ -95,8 +96,8 @@ public class DaxPathFinder {
      *
      * @return The next tile that your character is walking to
      */
-    public static Tile getNextWalkingTile(){
-        ArrayList<Tile> tiles = getWalkingHistory();
+    public static RSTile getNextWalkingTile(){
+        ArrayList<RSTile> tiles = getWalkingHistory();
         return tiles.size() > 0 && !tiles.get(0).equals(Players.localPlayer().getTile()) ? tiles.get(0) : null;
     }
 
@@ -110,7 +111,7 @@ public class DaxPathFinder {
     }
 
     public static int distance(Destination[][] map, Locatable tile) {
-        Tile worldTile = tile.getTile().toLocalTile();
+        RSTile worldTile = RSTile.fromTile(tile.getTile()).toLocalTile();
         int x = worldTile.getX(), y = worldTile.getY();
 
         if (!validLocalBounds(tile)) {
@@ -121,13 +122,13 @@ public class DaxPathFinder {
         return destination == null ? Integer.MAX_VALUE : destination.distance;
     }
 
-    public static boolean canReach(Tile tile) {
+    public static boolean canReach(RSTile tile) {
         return canReach(getMap(), tile);
     }
 
-    public static boolean canReach(Destination[][] map, Tile tile) {
+    public static boolean canReach(Destination[][] map, RSTile tile) {
         if (tile.getZ() != Players.localPlayer().getTile().getZ()) return false;
-        Tile worldTile = tile.getType() != Tile.TYPES.LOCAL ? tile.toLocalTile() : tile;
+        RSTile worldTile = tile.getType() != RSTile.TYPES.LOCAL ? tile.toLocalTile() : tile;
         int x = worldTile.getX(), y = worldTile.getY();
         if (!validLocalBounds(tile) || x > map.length || y > map[x].length) {
             return false;
@@ -136,12 +137,12 @@ public class DaxPathFinder {
         return destination != null;
     }
 
-    public static List<Tile> getPath(Tile tile) {
+    public static List<RSTile> getPath(RSTile tile) {
         return getPath(getMap(), tile);
     }
 
-    public static List<Tile> getPath(Destination destination) {
-        Stack<Tile> Tiles = new Stack<>();
+    public static List<RSTile> getPath(Destination destination) {
+        Stack<RSTile> Tiles = new Stack<>();
         Destination parent = destination;
         while (parent != null) {
             Tiles.add(parent.getWorldTile());
@@ -150,8 +151,8 @@ public class DaxPathFinder {
         return new ArrayList<>(Tiles);
     }
 
-    public static List<Tile> getPath(Destination[][] map, Tile tile) {
-        Tile worldTile = tile.getType() != Tile.TYPES.LOCAL ? tile.toLocalTile() : tile;
+    public static List<RSTile> getPath(Destination[][] map, RSTile tile) {
+        RSTile worldTile = tile.getType() != RSTile.TYPES.LOCAL ? tile.toLocalTile() : tile;
         int x = worldTile.getX(), y = worldTile.getY();
 
         Destination destination = map[x][y];
@@ -164,9 +165,10 @@ public class DaxPathFinder {
     }
 
     public static Destination[][] getMap() {
-        final Tile home = Players.localPlayer().getTile().toLocalTile();
+        final RSTile home = RSTile.fromTile(Players.localPlayer().getTile()).toLocalTile();
         Destination[][] map = new Destination[104][104];
-        int[][] collisionData = PathFinding.getCollisionData();
+//        int[][] collisionData = PathFinding.getCollisionData();
+        int[][] collisionData = Client.getClient().getCollisionMaps()[0].getFlags();
         if(collisionData == null || collisionData.length < home.getX() || collisionData[home.getX()].length < home.getY()){
             return map;
         }
@@ -186,7 +188,7 @@ public class DaxPathFinder {
                     continue; //Cannot traverse to tile from current.
                 }
 
-                Tile neighbor = direction.getPointingTile(currentLocal.getLocalTile());
+                RSTile neighbor = direction.getPointingTile(currentLocal.getLocalTile());
                 int destinationX = neighbor.getX(), destinationY = neighbor.getY();
 
                 if (!AStarNode.isWalkable(collisionData[destinationX][destinationY])) {
@@ -206,68 +208,67 @@ public class DaxPathFinder {
     }
 
     public static void drawQueue(Destination[][] map, Graphics graphics) {
-        Graphics2D g = (Graphics2D) graphics;
-        List<Tile> path = getWalkingQueue(map);
-        if (path == null) {
-            return;
-        }
-
-        Tile previousTile = path.get(0);
-        for (int i = 1; i < path.size(); i++) {
-            Point point1 = Projection.tileToScreen(path.get(i), 0);
-            Point point2 = Projection.tileToScreen(previousTile, 0);
-            if (point1 == null || point1.x == -1 || point2 == null || point2.x == -1) {
-                continue;
-            }
-            g.setColor(new Color(255, 0, 11, 116));
-            g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-            g.drawLine(point1.x, point1.y, point2.x, point2.y);
-            previousTile = path.get(i);
-        }
-
+//        Graphics2D g = (Graphics2D) graphics;
+//        List<RSTile> path = getWalkingQueue(map);
+//        if (path == null) {
+//            return;
+//        }
+//
+//        RSTile previousTile = path.get(0);
+//        for (int i = 1; i < path.size(); i++) {
+//            Point point1 = Projection.tileToScreen(path.get(i), 0);
+//            Point point2 = Projection.tileToScreen(previousTile, 0);
+//            if (point1 == null || point1.x == -1 || point2 == null || point2.x == -1) {
+//                continue;
+//            }
+//            g.setColor(new Color(255, 0, 11, 116));
+//            g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+//            g.drawLine(point1.x, point1.y, point2.x, point2.y);
+//            previousTile = path.get(i);
+//        }
     }
 
     public static void drawPaths(Destination[][] map, Graphics graphics) {
-        Graphics2D g = (Graphics2D) graphics;
-        for (Destination[] destinations : map) {
-            for (Destination destination : destinations) {
-
-                if (destination == null || destination.getParent() == null) {
-                    continue;
-                }
-
-                Tile tile = destination.getWorldTile();
-                Tile parent = destination.getParent().getWorldTile();
-
-                if (!tile.isOnScreen() && !parent.isOnScreen()) {
-                    continue;
-                }
-
-                Point point1 = Projection.tileToScreen(tile, 0);
-                Point point2 = Projection.tileToScreen(parent, 0);
-
-                if (point1 == null || point1.x == -1 || point2 == null || point2.x == -1) {
-                    continue;
-                }
-
-                g.setColor(new Color(255, 255, 255, 60));
-                g.setStroke(new BasicStroke(1));
-                g.drawLine(point1.x, point1.y, point2.x, point2.y);
-            }
-        }
+//        Graphics2D g = (Graphics2D) graphics;
+//        for (Destination[] destinations : map) {
+//            for (Destination destination : destinations) {
+//
+//                if (destination == null || destination.getParent() == null) {
+//                    continue;
+//                }
+//
+//                RSTile tile = destination.getWorldTile();
+//                RSTile parent = destination.getParent().getWorldTile();
+//
+//                if (!tile.isOnScreen() && !parent.isOnScreen()) {
+//                    continue;
+//                }
+//
+//                Point point1 = Projection.tileToScreen(tile, 0);
+//                Point point2 = Projection.tileToScreen(parent, 0);
+//
+//                if (point1 == null || point1.x == -1 || point2 == null || point2.x == -1) {
+//                    continue;
+//                }
+//
+//                g.setColor(new Color(255, 255, 255, 60));
+//                g.setStroke(new BasicStroke(1));
+//                g.drawLine(point1.x, point1.y, point2.x, point2.y);
+//            }
+//        }
     }
 
     private static boolean validLocalBounds(Locatable positionable) {
-        Tile tile = positionable.getTile().getType() == Tile.TYPES.LOCAL ? positionable.getTile() : positionable.getTile().toLocalTile();
+        RSTile tile = RSTile.fromTile(positionable.getTile()).getType() == RSTile.TYPES.LOCAL ? RSTile.fromTile(positionable.getTile()) : RSTile.fromTile(positionable.getTile()).toLocalTile();
         return tile.getX() >= 0 && tile.getX() < 104 && tile.getY() >= 0 && tile.getY() < 104;
     }
 
-    private static ArrayList<Tile> getWalkingHistory(){
+    private static ArrayList<RSTile> getWalkingHistory(){
         return getWalkingHistory(Players.localPlayer());
     }
 
-    private static ArrayList<Tile> getWalkingHistory(Character rsCharacter){
-        ArrayList<Tile> walkingQueue = new ArrayList<>();
+    private static ArrayList<RSTile> getWalkingHistory(Character rsCharacter){
+        ArrayList<RSTile> walkingQueue = new ArrayList<>();
         if (rsCharacter == null){
             return walkingQueue;
         }
@@ -285,8 +286,8 @@ public class DaxPathFinder {
         int plane = rsCharacter.getTile().getZ();
 
         for (int i = 0; i < xIndex.length && i < yIndex.length; i++) {
-//            walkingQueue.add(new Tile(xIndex[i], yIndex[i], plane, Tile.TYPES.LOCAL).toWorldTile());
-            walkingQueue.add(new Tile(xIndex[i], yIndex[i], plane));
+//            walkingQueue.add(new RSTile(xIndex[i], yIndex[i], plane, Tile.TYPES.LOCAL).toWorldTile());
+            walkingQueue.add(new RSTile(xIndex[i], yIndex[i], plane));
         }
         return walkingQueue;
     }

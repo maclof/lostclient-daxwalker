@@ -2,7 +2,7 @@ package org.lostclient.api.wrappers.walking.dax_api.api_lib;
 
 import org.lostclient.api.accessor.Players;
 import org.lostclient.api.interfaces.Locatable;
-import org.lostclient.api.wrappers.map.Tile;
+import org.lostclient.api.wrappers.walking.dax_api.shared.RSTile;
 import org.lostclient.api.wrappers.walking.dax_api.api_lib.models.*;
 import org.lostclient.api.wrappers.walking.dax_api.teleports.Teleport;
 import org.lostclient.api.wrappers.walking.dax_api.walker.DaxWalkerEngine;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class DaxWalker implements Loggable {
 
-    private static Map<Tile, Teleport> map;
+    private static Map<RSTile, Teleport> map;
     private static DaxWalker daxWalker;
     private static DaxWalkerEngine daxWalkerEngine;
     public static DaxWalker getInstance() {
@@ -63,12 +63,12 @@ public class DaxWalker implements Loggable {
             ShipUtils.crossGangplank();
             WaitFor.milliseconds(500, 1200);
         }
-        Tile start = Players.localPlayer().getTile();
+        RSTile start = RSTile.fromTile(Players.localPlayer().getTile());
         if (start.equals(destination)) {
             return true;
         }
 
-        List<PathRequestPair> pathRequestPairs = getInstance().getPathTeleports(destination.getTile());
+        List<PathRequestPair> pathRequestPairs = getInstance().getPathTeleports(RSTile.fromTile(destination.getTile()));
 
         pathRequestPairs.add(new PathRequestPair(Point3D.fromPositionable(start), Point3D.fromPositionable(destination)));
 
@@ -82,7 +82,7 @@ public class DaxWalker implements Loggable {
 		    return false;
 	    }
 
-	    return WalkerEngine.getInstance().walkPath(pathResult.toTilePath(), getGlobalWalkingCondition().and(walkingCondition));
+	    return WalkerEngine.getInstance().walkPath(pathResult.toTilePath(), getGlobalWalkingCondition().combine(walkingCondition));
     }
 
     public static boolean walkToBank() {
@@ -118,10 +118,10 @@ public class DaxWalker implements Loggable {
             getInstance().log(Level.WARNING, "No valid path found");
             return false;
         }
-        return WalkerEngine.getInstance().walkPath(pathResult.toTilePath(), getGlobalWalkingCondition().and(walkingCondition));
+        return WalkerEngine.getInstance().walkPath(pathResult.toTilePath(), getGlobalWalkingCondition().combine(walkingCondition));
     }
 
-    private List<PathRequestPair> getPathTeleports(Tile start) {
+    private List<PathRequestPair> getPathTeleports(RSTile start) {
         return Teleport.getValidStartingTiles().stream()
                 .map(t -> new PathRequestPair(Point3D.fromPositionable(t),
                         Point3D.fromPositionable(start)))
