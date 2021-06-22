@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="LostClient">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../LostClient.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

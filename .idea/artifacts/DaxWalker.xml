@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="DaxWalker">
+    <output-path>$PROJECT_DIR$/out/artifacts/DaxWalker</output-path>
+    <root id="archive" name="DaxWalker.jar">
+      <element id="module-output" name="DaxWalker" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/gson-2.8.7.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/guava-30.1.1-jre.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
